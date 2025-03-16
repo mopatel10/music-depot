@@ -1,27 +1,42 @@
-// app/login/page.tsx
 "use client";
 
 import React, { useState } from "react";
-import { useRouter } from "next/navigation";  // Next.js router for navigation
-import "../public/styles/globals.css"; // Update the path based on your structure
-import { useAuth } from './context/AuthContext';
+import { useRouter } from "next/navigation";
+import { useAuth } from "./context/AuthContext"; 
+import "../public/styles/globals.css";
+import axios from "axios";
 
-interface LoginPageProps {
-  setIsLoggedIn: (isLoggedIn: boolean) => void;
-}
 const LoginPage: React.FC = () => {
   const { setIsLoggedIn } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const router = useRouter();  // useRouter hook for navigation
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+  const router = useRouter();
+  
 
-  const handleLogin = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setIsLoggedIn(true); 
-    console.log("Login Successful", { email, password });
-    // setIsLoggedIn(true);
-    router.push("/ViewLessons");  // Navigate to another page
+    setLoading(true);
+    setError(""); // Clear previous errors before a new attempt
+  
+    try {
+      const res = await axios.post("/api/authUser", { email, password });
+  
+      if (res.status !== 200) throw new Error(res.data.error || "Login failed");
+  
+      localStorage.setItem("token", res.data.token);
+      setIsLoggedIn(true);
+      router.replace("/ViewLessons");
+  
+    } catch (error: any) {
+      console.error("Login Error:", error);
+      setError(error.response?.data?.error || "Login failed");
+    } finally {
+      setLoading(false);
+    }
   };
+  
 
   return (
     <div className="flex justify-center items-center h-screen bg-gray-100 relative overflow-hidden">
@@ -41,6 +56,10 @@ const LoginPage: React.FC = () => {
         <p className="text-sm text-gray-600 mb-6">
           Manage your lessons and schedules effortlessly
         </p>
+
+        {/* Display error message if present */}
+        {error && <p className="text-red-500 text-sm mb-4">{error}</p>}
+
         <form onSubmit={handleLogin}>
           <div className="mb-4 text-left">
             <label htmlFor="email" className="block text-sm font-bold text-gray-700 mb-1">
@@ -73,8 +92,9 @@ const LoginPage: React.FC = () => {
           <button
             type="submit"
             className="w-full py-3 text-white font-bold rounded-full bg-gradient-to-r from-blue-500 to-pink-500 hover:from-pink-500 hover:to-blue-500 transition"
+            disabled={loading}
           >
-            Login
+            {loading ? "Logging in..." : "Login"}
           </button>
         </form>
       </div>

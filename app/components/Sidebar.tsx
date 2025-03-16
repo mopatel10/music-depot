@@ -10,14 +10,9 @@ import {
   FaAngleDoubleLeft,
   FaMusic,
 } from "react-icons/fa";
-import Link from "next/link"; // Use Next.js Link component instead of react-router-dom
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useAuth } from '../context/AuthContext';
-
-
-interface SidebarProps {
-  setIsLoggedIn: (isLoggedIn: boolean) => void;
-}
 
 const Sidebar: React.FC = () => {
   const { isLoggedIn, setIsLoggedIn } = useAuth(); 
@@ -42,7 +37,7 @@ const Sidebar: React.FC = () => {
     >
       {/* Toggle Button */}
       <button
-        className="absolute top-5 right-[-18px] bg-blue-500 text-white p-2 rounded-full shadow-lg transition-transform duration-300 hover:bg-blue-600"
+        className="absolute top-5 right-[-18px] text-white p-2 rounded-full shadow-lg transition-transform duration-300"
         onClick={() => setIsCollapsed(!isCollapsed)}
       >
         {!isCollapsed ? <FaAngleDoubleLeft /> : <FaAngleDoubleRight />}
@@ -56,7 +51,7 @@ const Sidebar: React.FC = () => {
           {/* Lessons */}
           <li>
             <button
-              className="flex items-center w-full p-3 text-lg rounded-lg hover:bg-white hover:bg-opacity-20"
+              className="flex items-center w-full p-3 text-lg rounded-lg hover:bg-blue-700 hover:bg-opacity-20"
               onClick={() => setScheduleOpen(!scheduleOpen)}
             >
               <span className="flex items-center justify-center w-10">
@@ -72,12 +67,12 @@ const Sidebar: React.FC = () => {
             {scheduleOpen && !isCollapsed && (
               <ul className="pl-6 space-y-2">
                 <li>
-                  <Link href="/ViewSchedule" className="block p-2 rounded-lg hover:bg-white hover:bg-opacity-20">
+                  <Link href="/ViewLessons" className="block p-2 rounded-lg hover:bg-purple-600 hover:bg-opacity-20">
                     View Lessons
                   </Link>
                 </li>
                 <li>
-                  <Link href="/AddLesson" className="block p-2 rounded-lg hover:bg-white hover:bg-opacity-20">
+                  <Link href="/AddLesson" className="block p-2 rounded-lg hover:bg-purple-600 hover:bg-opacity-20">
                     Add Lesson
                   </Link>
                 </li>
@@ -88,7 +83,7 @@ const Sidebar: React.FC = () => {
           {/* Sessions */}
           <li>
             <button
-              className="flex items-center w-full p-3 text-lg rounded-lg hover:bg-white hover:bg-opacity-20"
+              className="flex items-center w-full p-3 text-lg rounded-lg hover:bg-blue-700 hover:bg-opacity-20"
               onClick={() => setSessionOpen(!sessionOpen)}
             >
               <span className="flex items-center justify-center w-10">
@@ -104,12 +99,12 @@ const Sidebar: React.FC = () => {
             {sessionOpen && !isCollapsed && (
               <ul className="pl-6 space-y-2">
                 <li>
-                  <Link href="/ViewInstructor" className="block p-2 rounded-lg hover:bg-white hover:bg-opacity-20">
+                  <Link href="/ViewInstructor" className="block p-2 rounded-lg hover:bg-purple-600 hover:bg-opacity-20">
                     View Sessions
                   </Link>
                 </li>
                 <li>
-                  <Link href="/ViewClient" className="block p-2 rounded-lg hover:bg-white hover:bg-opacity-20">
+                  <Link href="/ViewClient" className="block p-2 rounded-lg hover:bg-purple-600 hover:bg-opacity-20">
                     Add Session
                   </Link>
                 </li>
@@ -120,7 +115,7 @@ const Sidebar: React.FC = () => {
           {/* Client/Instructor */}
           <li>
             <button
-              className="flex items-center w-full p-3 text-lg rounded-lg hover:bg-white hover:bg-opacity-20"
+              className="flex items-center w-full p-3 text-lg rounded-lg hover:bg-blue-700 hover:bg-opacity-20"
               onClick={() => setClientInstructorOpen(!clientInstructorOpen)}
             >
               <span className="flex items-center justify-center w-10">
@@ -136,22 +131,22 @@ const Sidebar: React.FC = () => {
             {clientInstructorOpen && !isCollapsed && (
               <ul className="pl-6 space-y-2">
                 <li>
-                  <Link href="/ViewInstructor" className="block p-2 rounded-lg hover:bg-white hover:bg-opacity-20">
+                  <Link href="/ViewInstructor" className="block p-2 rounded-lg hover:bg-purple-600 hover:bg-opacity-20">
                     View Instructor Schedule
                   </Link>
                 </li>
                 <li>
-                  <Link href="/ViewClient" className="block p-2 rounded-lg hover:bg-white hover:bg-opacity-20">
+                  <Link href="/ViewClient" className="block p-2 rounded-lg hover:bg-purple-600 hover:bg-opacity-20">
                     View Client Schedule
                   </Link>
                 </li>
                 <li>
-                  <Link href="/Register" className="block p-2 rounded-lg hover:bg-white hover:bg-opacity-20">
+                  <Link href="/Register" className="block p-2 rounded-lg hover:bg-purple-600 hover:bg-opacity-20">
                     Add Client/Instructor
                   </Link>
                 </li>
                 <li>
-                  <Link href="/UpdateClientInstructor" className="block p-2 rounded-lg hover:bg-white hover:bg-opacity-20">
+                  <Link href="/UpdateClientInstructor" className="block p-2 rounded-lg hover:bg-purple-600 hover:bg-opacity-20">
                     Update Client/Instructor
                   </Link>
                 </li>
@@ -161,7 +156,7 @@ const Sidebar: React.FC = () => {
 
           {/* Financials */}
           <li>
-            <Link href="/Financials" className="flex items-center p-3 text-lg rounded-lg hover:bg-white hover:bg-opacity-20">
+            <Link href="/Financials" className="flex items-center p-3 text-lg rounded-lg hover:bg-purple-600 hover:bg-opacity-20">
               <span className="flex items-center justify-center w-10">
                 <FaMoneyBillWave />
               </span>
@@ -173,7 +168,7 @@ const Sidebar: React.FC = () => {
 
       {/* Log Out */}
       <div className="p-2">
-        <button onClick={handleLogout} className="flex items-center p-3 text-lg rounded-lg hover:bg-white hover:bg-opacity-20">
+        <button onClick={handleLogout} className="flex items-center p-3 text-lg rounded-lg hover:bg-opacity-20">
           <span className="flex items-center justify-center w-10">
             <FaSignOutAlt />
           </span>

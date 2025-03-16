@@ -4,7 +4,6 @@
 @tailwind components;
 @tailwind utilities;
 
-
 :root {
   --background: #ffffff;
   --foreground: #171717;
@@ -29,13 +28,6 @@ body {
   margin: 0;
   padding: 0;
   background: #f4f4f4;
-}
-
-/* Wraps the entire app */
-.app-container {
-  display: flex;
-  min-height: 100vh;
-  width: 100%;
 }
 
 /* Sidebar */
@@ -65,7 +57,7 @@ body {
   position: absolute;
   top: 15px;
   right: -18px;
-  background: #007bff;
+  background: transparent;
   color: white;
   border-radius: 50%;
   padding: 10px;
@@ -74,51 +66,11 @@ body {
 }
 
 .toggle-btn:hover {
-  background: #0056b3;
-}
-
-/* Main Content Adjusts to Sidebar */
-.main-content {
-  flex-grow: 1;
-  padding: 20px;
-  transition: margin-left 0.3s ease-in-out;
-}
-
-.expanded-sidebar {
-  margin-left: 250px;
-}
-
-.collapsed-sidebar {
-  margin-left: 64px;
-}
-
-.full-width {
-  margin-left: 0;
-}
-
-
-/* Responsive Sidebar */
-@media (max-width: 768px) {
-  .sidebar {
-      width: 100%;
-      position: fixed;
-      height: 100vh;
-      transform: translateX(-100%);
-  }
-
-  /* Show sidebar when active */
-  .sidebar.active {
-      transform: translateX(0);
-  }
-
-  .main-content {
-      width: 100%;
-  }
+  background: transparent;
 }
 
 /* Buttons */
 button {
-  background: #007bff;
   color: white;
   border: none;
   padding: 10px 15px;
@@ -143,4 +95,3 @@ button:hover {
 
 .animate-float1 { animation: float1 8s infinite ease-in-out alternate; }
 .animate-float2 { animation: float2 10s infinite ease-in-out alternate; }
-
