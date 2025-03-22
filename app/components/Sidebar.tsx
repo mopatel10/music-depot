@@ -1,4 +1,5 @@
-'use client'; 
+'use client';
+
 import React, { useState } from "react";
 import {
   FaCalendarAlt,
@@ -14,8 +15,8 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useAuth } from '../context/AuthContext';
 
-const Sidebar: React.FC = () => {
-  const { isLoggedIn, setIsLoggedIn } = useAuth(); 
+const Sidebar: React.FC<{ onToggle?: (collapsed: boolean) => void }> = ({ onToggle }) => {
+  const { isLoggedIn, setIsLoggedIn } = useAuth();
   const [scheduleOpen, setScheduleOpen] = useState<boolean>(false);
   const [clientInstructorOpen, setClientInstructorOpen] = useState<boolean>(false);
   const [sessionOpen, setSessionOpen] = useState<boolean>(false);
@@ -24,11 +25,19 @@ const Sidebar: React.FC = () => {
 
   const handleLogout = () => {
     setIsLoggedIn(false);
-    router.push("/"); // This will navigate to the home page
+    router.push("/");
+  };
+
+  const toggleSidebar = () => {
+    const newCollapsedState = !isCollapsed;
+    setIsCollapsed(newCollapsedState);
+    if (onToggle) {
+      onToggle(newCollapsedState);
+    }
   };
 
   if (!isLoggedIn) {
-    return null; // Do not render the sidebar if the user is not logged in
+    return null;
   }
 
   return (
@@ -38,14 +47,14 @@ const Sidebar: React.FC = () => {
       {/* Toggle Button */}
       <button
         className="absolute top-5 right-[-18px] text-white p-2 rounded-full shadow-lg transition-transform duration-300"
-        onClick={() => setIsCollapsed(!isCollapsed)}
+        onClick={toggleSidebar}
       >
         {!isCollapsed ? <FaAngleDoubleLeft /> : <FaAngleDoubleRight />}
       </button>
 
       <div className="p-2">
         {/* Title */}
-        {!isCollapsed && <h2 className="text-xl font-bold mb-6 pl-3">Your Music Depot</h2>}
+        {!isCollapsed && <h2 className="text-xl font-bold mb-6 pl-3 ">Your Music Depot</h2>}
 
         <ul className="space-y-2">
           {/* Lessons */}

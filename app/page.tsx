@@ -27,7 +27,7 @@ const LoginPage: React.FC = () => {
   
       localStorage.setItem("token", res.data.token);
       setIsLoggedIn(true);
-      router.replace("/ViewLessons");
+      router.push("/ViewLessons");
   
     } catch (error: any) {
       console.error("Login Error:", error);

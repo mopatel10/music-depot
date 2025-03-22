@@ -67,6 +67,7 @@ model lesson_schedule {
   end_time          DateTime    @db.Timestamp(6)
   cancelled         Boolean?    @default(false)
   attendingcapacity Int?
+  date              DateTime?   @db.Date
   instructors       instructors @relation(fields: [instructor_id], references: [instructor_id], onDelete: Cascade, onUpdate: NoAction)
   lessons           lessons     @relation(fields: [lesson_id], references: [lesson_id], onDelete: Cascade, onUpdate: NoAction)
   rooms             rooms       @relation(fields: [room_id], references: [room_id], onDelete: SetNull, onUpdate: NoAction)

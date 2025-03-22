@@ -1,17 +1,17 @@
 'use client'; 
 import React from "react";
-import Calendar from "../components/Calendar";
+import CalendarGfg from "../components/Calendar";
 
-function NewSchedule() {
+function AddLessons() {
 
 
   return (
       <div className="flex-grow p-8">
 
                 <h1 className="text-2xl font-bold mb-4 text-blue-900 text-center font-serif">Add Lessons</h1>
-         <Calendar />
+         <CalendarGfg view="AddLessons"/>
       </div>
   );
 }
 
-export default NewSchedule; 
+export default AddLessons; 

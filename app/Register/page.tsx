@@ -1,6 +1,6 @@
+"use client";
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import "tailwindcss/tailwind.css";
+import { useRouter } from "next/navigation";
 
 const Register = () => {
   const [role, setRole] = useState("Client");
@@ -10,7 +10,7 @@ const Register = () => {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
-  const navigate = useNavigate();
+  const router = useRouter();
 
   const handleSignup = (e) => {
     e.preventDefault();
@@ -19,7 +19,7 @@ const Register = () => {
       return;
     }
     console.log("Sign Up Successful", { name, email, password, role, employmentType });
-    navigate("/");
+    router.push("/");
   };
 
   return (

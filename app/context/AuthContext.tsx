@@ -1,32 +1,32 @@
-// context/AuthContext.tsx
-'use client';
-import React, { createContext, useContext, useState, ReactNode } from 'react';
+'use client';  
+import React, { createContext, useContext, useState, useEffect } from "react";
 
-interface AuthContextType {
-  isLoggedIn: boolean;
-  setIsLoggedIn: React.Dispatch<React.SetStateAction<boolean>>;
-}
+// Define authentication context
+const AuthContext = createContext<{ isLoggedIn: boolean; setIsLoggedIn: (value: boolean) => void }>({
+  isLoggedIn: false,
+  setIsLoggedIn: () => {},
+});
 
-const AuthContext = createContext<AuthContextType | undefined>(undefined);
+// Provide authentication context
+export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const [isLoggedIn, setIsLoggedInState] = useState<boolean>(false);
 
-export const useAuth = () => {
-  const context = useContext(AuthContext);
-  if (!context) {
-    throw new Error('useAuth must be used within an AuthProvider');
-  }
-  return context;
+  // Load authentication state from localStorage on mount
+  useEffect(() => {
+    const storedAuth = localStorage.getItem("isLoggedIn");
+    if (storedAuth === "true") {
+      setIsLoggedInState(true);
+    }
+  }, []);
+
+  // Update localStorage whenever authentication state changes
+  const setIsLoggedIn = (value: boolean) => {
+    setIsLoggedInState(value);
+    localStorage.setItem("isLoggedIn", value.toString());
+  };
+
+  return <AuthContext.Provider value={{ isLoggedIn, setIsLoggedIn }}>{children}</AuthContext.Provider>;
 };
 
-interface AuthProviderProps {
-  children: ReactNode;
-}
-
-export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
-  const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
-
-  return (
-    <AuthContext.Provider value={{ isLoggedIn, setIsLoggedIn }}>
-      {children}
-    </AuthContext.Provider>
-  );
-};
+// Custom hook to use authentication context
+export const useAuth = () => useContext(AuthContext);
