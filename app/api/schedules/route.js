@@ -47,24 +47,10 @@ export async function GET(req) {
         }
         break;
 
-      case "ViewInstructors":
-        // Fetch instructors and their related lessons
-        data = await prisma.instructors.findMany({
-          include: {
-            lessons: true, // Include lessons for each instructor
-          },
-        });
-        break;
-
-      case "ViewClients":
-        // Fetch clients
-        data = await prisma.clients.findMany();
-        break;
 
       default:
         return NextResponse.json({ error: "Invalid view type" }, { status: 400 });
     }
-
     return NextResponse.json(data);
   } catch (error) {
     console.error("Error fetching calendar data:", error);

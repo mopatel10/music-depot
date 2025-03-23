@@ -108,12 +108,12 @@ const Sidebar: React.FC<{ onToggle?: (collapsed: boolean) => void }> = ({ onTogg
             {sessionOpen && !isCollapsed && (
               <ul className="pl-6 space-y-2">
                 <li>
-                  <Link href="/ViewInstructor" className="block p-2 rounded-lg hover:bg-purple-600 hover:bg-opacity-20">
+                  <Link href="/ViewSessions" className="block p-2 rounded-lg hover:bg-purple-600 hover:bg-opacity-20">
                     View Sessions
                   </Link>
                 </li>
                 <li>
-                  <Link href="/ViewClient" className="block p-2 rounded-lg hover:bg-purple-600 hover:bg-opacity-20">
+                  <Link href="/AddSession" className="block p-2 rounded-lg hover:bg-purple-600 hover:bg-opacity-20">
                     Add Session
                   </Link>
                 </li>
@@ -177,11 +177,11 @@ const Sidebar: React.FC<{ onToggle?: (collapsed: boolean) => void }> = ({ onTogg
 
       {/* Log Out */}
       <div className="p-2">
-        <button onClick={handleLogout} className="flex items-center p-3 text-lg rounded-lg hover:bg-opacity-20">
-          <span className="flex items-center justify-center w-10">
+        <button onClick={handleLogout} className="flex items-center p-3 text-lg rounded-lg hover:bg-opacity-20 bg-gradient-to-b from-blue-300 to-purple-600">
+          <span className="flex items-center justify-center w-10 ">
             <FaSignOutAlt />
           </span>
-          {!isCollapsed && <span className="ml-2">Log Out</span>}
+          {!isCollapsed && <span className="ml-2 ">Log Out</span>}
         </button>
       </div>
     </div>

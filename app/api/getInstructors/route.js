@@ -3,6 +3,7 @@ import prisma from "@/lib/prisma";
 
 export async function GET() {
   try {
+    // Fetch instructors and their users' first and last name
     const instructors = await prisma.instructors.findMany({
       include: {
         users: {
@@ -14,7 +15,7 @@ export async function GET() {
       },
     });
 
-    // Format data to return instructor_id with first_name and last_name
+    // Transform and return only the instructor's ID, first name, and last name
     const formattedData = instructors.map((instructor) => ({
       instructor_id: instructor.instructor_id,
       first_name: instructor.users.first_name,
@@ -24,6 +25,9 @@ export async function GET() {
     return NextResponse.json(formattedData);
   } catch (error) {
     console.error("Error fetching instructors:", error);
-    return NextResponse.json({ error: "Failed to fetch instructors" }, { status: 500 });
+    return NextResponse.json(
+      { error: "Failed to fetch instructors" },
+      { status: 500 }
+    );
   }
 }
