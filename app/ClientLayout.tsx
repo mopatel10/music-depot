@@ -2,13 +2,13 @@
 
 import React, { useState } from 'react';
 import Sidebar from './components/Sidebar';
-import "@/public/styles/globals.css";
+import '@/public/styles/globals.css';
 import { usePathname } from 'next/navigation';
 
 const ClientLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
   const pathname = usePathname();
-  const isLoggedOut = pathname === "/";
+  const isLoggedOut = pathname === '/';
 
   const handleSidebarToggle = (collapsed: boolean) => {
     setIsSidebarCollapsed(collapsed);
@@ -17,8 +17,11 @@ const ClientLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => 
   return (
     <section className={`layout ${isLoggedOut ? 'logged-out' : ''}`}>
       {!isLoggedOut && <Sidebar onToggle={handleSidebarToggle} />}
-      
-      <div className={`body ${isSidebarCollapsed && !isLoggedOut ? 'collapsed' : ''}`}>
+
+      <div
+        className={`body ${isSidebarCollapsed ? 'collapsed' : 'expanded'}`}
+        style={{ marginLeft: isLoggedOut ? 0 : isSidebarCollapsed ? '80px' : '250px' }}
+      >
         {children}
       </div>
     </section>

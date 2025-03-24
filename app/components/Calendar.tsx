@@ -228,11 +228,11 @@ export default function CalendarGfg({ view }) {
     }
   };
 
-  return (
+return (
     <div className="flex flex-col md:flex-row items-start bg-white p-6 rounded-lg shadow-md max-w-4xl mx-auto space-y-6 md:space-y-0 md:space-x-6">
 
       {/* Display Sessions for ViewSessions */}
-      
+
       {view === 'ViewSessions' && (
         <div className="w-full">
           {sessions.length > 0 ? (
@@ -269,28 +269,37 @@ export default function CalendarGfg({ view }) {
       </div>
     )}
 
-
       {/* Form for AddLessons */}
       {view === 'AddLessons' && (
-        <div className="w-full md:w-1/2 lg:w-2/3">
-          <form onSubmit={handleFormSubmit} className="space-y-4 w-full">
+        <div className='w-full max-w-4xl bg-white shadow-lg rounded-xl p-8 space-y-6'>
+          <h1 className="text-3xl font-semibold text-blue-900 text-center">View Lessons</h1>
+          
+        <form onSubmit={handleFormSubmit} className="w-full space-y-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
               <label className="block text-sm font-medium text-gray-700">Lesson Name</label>
               <input
                 type="text"
                 name="lesson_name"
-                value={formData.lesson_name} // Corrected to match formData
+                value={formData.lesson_name}
                 onChange={handleInputChange}
-                className="mt-1 block w-full p-2 border border-gray-300 rounded-md"
+                className="mt-1 block w-full p-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                 required
               />
             </div>
+
             <div>
               <label className="block text-sm font-medium text-gray-700">Instructor</label>
               {instructors.length === 0 ? (
                 <p>Loading instructors...</p>
               ) : (
-                <select name="instructor_id" value={formData.instructor_id} onChange={handleInputChange} required>
+                <select
+                  name="instructor_id"
+                  value={formData.instructor_id}
+                  onChange={handleInputChange}
+                  className="mt-1 block w-full p-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  required
+                >
                   <option value="">Select Instructor</option>
                   {instructors.map((inst) => (
                     <option key={inst.instructor_id} value={inst.instructor_id}>
@@ -300,9 +309,16 @@ export default function CalendarGfg({ view }) {
                 </select>
               )}
             </div>
+
             <div>
               <label className="block text-sm font-medium text-gray-700">Level</label>
-              <select name="level_id" value={formData.level_id} onChange={handleInputChange} required>
+              <select
+                name="level_id"
+                value={formData.level_id}
+                onChange={handleInputChange}
+                className="mt-1 block w-full p-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                required
+              >
                 <option value="">Select Level</option>
                 {levels.length > 0 ? (
                   levels.map((lvl) => (
@@ -315,6 +331,7 @@ export default function CalendarGfg({ view }) {
                 )}
               </select>
             </div>
+
             <div>
               <label className="block text-sm font-medium text-gray-700">Status</label>
               <input
@@ -322,11 +339,12 @@ export default function CalendarGfg({ view }) {
                 name="status"
                 value={formData.status}
                 onChange={handleInputChange}
-                maxLength={1} // Single character limit
-                className="mt-1 block w-full p-2 border border-gray-300 rounded-md"
+                maxLength={1}
+                className="mt-1 block w-full p-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                 required
               />
             </div>
+
             <div>
               <label className="block text-sm font-medium text-gray-700">Cost</label>
               <input
@@ -334,10 +352,11 @@ export default function CalendarGfg({ view }) {
                 name="cost"
                 value={formData.cost}
                 onChange={handleInputChange}
-                className="mt-1 block w-full p-2 border border-gray-300 rounded-md"
+                className="mt-1 block w-full p-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                 required
               />
             </div>
+
             <div>
               <label className="block text-sm font-medium text-gray-700">Total Lessons</label>
               <input
@@ -345,10 +364,11 @@ export default function CalendarGfg({ view }) {
                 name="total_lessons"
                 value={formData.total_lessons}
                 onChange={handleInputChange}
-                className="mt-1 block w-full p-2 border border-gray-300 rounded-md"
+                className="mt-1 block w-full p-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                 required
               />
             </div>
+
             <div>
               <label className="block text-sm font-medium text-gray-700">Capacity (Max 10)</label>
               <input
@@ -357,10 +377,11 @@ export default function CalendarGfg({ view }) {
                 value={formData.capacity}
                 onChange={handleInputChange}
                 max="10"
-                className="mt-1 block w-full p-2 border border-gray-300 rounded-md"
+                className="mt-1 block w-full p-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                 required
               />
             </div>
+
             <div>
               <label className="block text-sm font-medium text-gray-700">Start Date</label>
               <input
@@ -368,13 +389,14 @@ export default function CalendarGfg({ view }) {
                 name="start_date"
                 value={formData.start_date}
                 onChange={handleInputChange}
-                className="mt-1 block w-full p-2 border border-gray-300 rounded-md"
+                className="mt-1 block w-full p-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                 required
               />
             </div>
+          </div>
 
-            <button type="submit" className="w-full bg-blue-500 text-white p-2 rounded-md hover:bg-blue-600">Add Lesson</button>
-          </form>
+          <button type="submit" className="w-full bg-blue-600 text-white p-3 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 bg-gradient-to-b from-blue-300 to-purple-600">Add Lesson</button>
+        </form>
         </div>
       )}
 
@@ -386,12 +408,6 @@ export default function CalendarGfg({ view }) {
                   {data.map((lesson, index) => (
                     <div key={index} className="bg-gray-100 p-4 rounded-md shadow-md min-w-[250px] max-w-[400px] w-full relative">
                       {/* Delete Button */}
-                      <button
-                        className="absolute top-1/2 right-2 transform -translate-y-1/2 bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
-                        onClick={() => handleDeleteLesson(lesson.lesson_id)} // Pass lesson id to handleDeleteLesson
-                      >
-                        🗑️
-                      </button>
 
                       <p className="text-lg font-semibold">{lesson.lesson_name}</p>
                       <p><strong>Instructor:</strong> {lesson.instructors?.users?.first_name || 'FN'} {lesson.instructors?.users?.last_name || 'LN'}</p>
@@ -400,6 +416,9 @@ export default function CalendarGfg({ view }) {
                       <p><strong>Cost:</strong> ${lesson.cost}</p>
                       <p><strong>Start Date:</strong> {new Date(lesson.start_date).toLocaleDateString()}</p>
                       <p><strong>Capacity:</strong> {lesson.capacity}</p>
+                      <button onClick={() => handleDeleteSession(lesson.lesson_id)} className="flex items-center gap-1 bg-gradient-to-b from-blue-300 to-purple-600 hover:text-red-500 ">
+                        <Trash2 size={20} /> Delete
+                      </button>
                     </div>
                   ))}
                 </div>
