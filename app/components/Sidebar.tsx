@@ -155,7 +155,7 @@ const Sidebar: React.FC<{ onToggle?: (collapsed: boolean) => void }> = ({ onTogg
                   </Link>
                 </li>
                 <li>
-                  <Link href="/UpdateClientInstructor" className="block p-2 rounded-lg hover:bg-purple-600 hover:bg-opacity-20">
+                  <Link href="/updateUsers" className="block p-2 rounded-lg hover:bg-purple-600 hover:bg-opacity-20">
                     Update Client/Instructor
                   </Link>
                 </li>

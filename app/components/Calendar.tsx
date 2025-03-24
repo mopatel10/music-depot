@@ -3,13 +3,13 @@
 import React, { useEffect, useState } from 'react';
 import 'react-calendar/dist/Calendar.css';
 import '@/public/styles/globals.css';
-import { Trash2, XCircle } from "lucide-react";
+import { Trash2, XCircle, Edit, PlusCircle } from "lucide-react";
 import { useRouter } from "next/navigation";
 
 export default function CalendarGfg({ view }) {
   const router = useRouter();
   const [data, setData] = useState(null);
-  const [sessions, setSessions] = useState([]); // State for sessions
+  const [sessions, setSessions] = useState([]);
   const [instructors, setInstructors] = useState([]);
   const [levels, setLevels] = useState([]);
   const [formData, setFormData] = useState({
@@ -229,65 +229,85 @@ export default function CalendarGfg({ view }) {
   };
 
 return (
-    <div className="flex flex-col md:flex-row items-start bg-white p-6 rounded-lg shadow-md max-w-4xl mx-auto space-y-6 md:space-y-0 md:space-x-6">
+  <div className="min-h-screen bg-gradient-to-br from-blue-50 to-purple-100 p-6">
+  <div className="container mx-auto max-w-6xl bg-white/90 backdrop-blur-sm rounded-2xl shadow-2xl overflow-hidden">
+    {/* Header with Dynamic Title */}
+    <div className="bg-gradient-to-r from-blue-500 to-purple-600 p-6">
+      <h1 className="text-4xl font-extrabold text-white text-center tracking-tight">
+        {view === 'ViewSessions' && 'Session Management'}
+        {view === 'AddLessons' && 'Create New Lesson'}
+        {view === 'ViewLessons' && 'Lesson Catalog'}
+      </h1>
+    </div>
 
-      {/* Display Sessions for ViewSessions */}
+ {/* Sessions View */}
+ {view === 'ViewSessions' && (
+          <div className="p-6">
+            {sessions.length > 0 ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {sessions.map((session, index) => (
+                  <div 
+                    key={index} 
+                    className="bg-white border border-gray-100 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 p-6 space-y-3 relative group"
+                  >
+                    <div className="absolute top-4 right-4 flex space-x-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                      <button 
+                        onClick={() => handleCancel(session.session_id)} 
+                        className="text-orange-500 hover:text-orange-700 bg-orange-50 p-2 rounded-full"
+                      >
+                        <XCircle size={20} />
+                      </button>
+                      <button 
+                        onClick={() => handleDeleteSession(session.session_id)} 
+                        className="text-red-500 hover:text-red-700 bg-red-50 p-2 rounded-full"
+                      >
+                        <Trash2 size={20} />
+                      </button>
+                    </div>
 
-      {view === 'ViewSessions' && (
-        <div className="w-full">
-          {sessions.length > 0 ? (
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              {sessions.map((session, index) => (
-                <div key={index} className="bg-gray-100 p-4 rounded-md shadow-md min-w-[250px] max-w-[400px] w-full relative">
-                  <p className="text-xl font-semibold mb-2">{session.lessons.lesson_name}</p>
-                  <p className="mb-1"><strong>Instructor:</strong> {session.instructors?.users?.first_name} {session.instructors?.users?.last_name}</p>
-                  <p className="mb-1"><strong>Level:</strong> {session.lessons?.lesson_levels?.level_name}</p>
-                  <p className="mb-1"><strong>Cost:</strong> ${session.lessons.cost}</p>
-                  <p className="mb-1"><strong>Date:</strong> {new Date(session.date).toLocaleDateString()}</p>
-                  <p className="mb-1"><strong>Start Time:</strong> {new Date(session.start_time).toLocaleTimeString()}</p>
-                  <p className="mb-1"><strong>End Time:</strong> {new Date(session.end_time).toLocaleTimeString()}</p>
-                  <p className="mb-1"><strong>Room:</strong> {session.rooms?.room_type}</p>
-                  <p className="mb-1"><strong>Capacity:</strong> {session.attendingcapacity}</p>
-                  <p><strong>Cancelled:</strong> {session.cancelled ? 'Yes' : 'No'}</p>
-
-                  {/* Action Buttons */}
-                  <div className="flex gap-4 mt-4">
-                  <button onClick={() => handleCancel(session.session_id)} className="flex items-center gap-1 text-orange-500 hover:text-orange-700 bg-gradient-to-b from-blue-300 to-purple-600">
-                    <XCircle size={20} /> Cancel
-                  </button>
-                  <button onClick={() => handleDeleteSession(session.session_id)} className="flex items-center gap-1 bg-gradient-to-b from-blue-300 to-purple-600 hover:text-red-500">
-                    <Trash2 size={20} /> Delete
-                  </button>
-                </div>
-
-                </div>
-              ))}
-            </div>
-        ) : (
-          <p>No sessions found.</p>
+                    <h3 className="text-xl font-bold text-blue-900 mb-2">{session.lessons.lesson_name}</h3>
+                    <div className="space-y-1 text-gray-600">
+                      <p><strong>Instructor:</strong> {session.instructors?.users?.first_name} {session.instructors?.users?.last_name}</p>
+                      <p><strong>Level:</strong> {session.lessons?.lesson_levels?.level_name}</p>
+                      <p><strong>Date:</strong> {new Date(session.date).toLocaleDateString()}</p>
+                      <p><strong>Time:</strong> {new Date(session.start_time).toLocaleTimeString()} - {new Date(session.end_time).toLocaleTimeString()}</p>
+                      <p><strong>Room:</strong> {session.rooms?.room_type}</p>
+                      <p><strong>Capacity:</strong> {session.attendingcapacity}</p>
+                      {session.cancelled && (
+                        <span className="text-red-500 font-semibold">Cancelled</span>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="text-center py-12 bg-gray-50 rounded-xl">
+                <p className="text-gray-500 text-xl">No sessions available</p>
+              </div>
+            )}
+          </div>
         )}
-      </div>
-    )}
 
       {/* Form for AddLessons */}
-      {view === 'AddLessons' && (
-        <div className='w-full max-w-4xl bg-white shadow-lg rounded-xl p-8 space-y-6'>
-          <h1 className="text-3xl font-semibold text-blue-900 text-center">View Lessons</h1>
-          
-        <form onSubmit={handleFormSubmit} className="w-full space-y-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div>
-              <label className="block text-sm font-medium text-gray-700">Lesson Name</label>
-              <input
-                type="text"
-                name="lesson_name"
-                value={formData.lesson_name}
-                onChange={handleInputChange}
-                className="mt-1 block w-full p-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                required
-              />
-            </div>
 
+        {view === 'AddLessons' && (
+          <div className="p-8">
+            <form onSubmit={handleFormSubmit} className="space-y-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {/* Input fields with enhanced styling */}
+                {/* (Keep existing input structure, just update classes) */}
+                <div className="space-y-2">
+                  <label className="block text-sm font-medium text-gray-700">Lesson Name</label>
+                  <input
+                    type="text"
+                    name="lesson_name"
+                    value={formData.lesson_name}
+                    onChange={handleInputChange}
+                    className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-300"
+                    required
+                    placeholder="Enter lesson name"
+                  />
+                </div>
             <div>
               <label className="block text-sm font-medium text-gray-700">Instructor</label>
               {instructors.length === 0 ? (
@@ -297,7 +317,7 @@ return (
                   name="instructor_id"
                   value={formData.instructor_id}
                   onChange={handleInputChange}
-                  className="mt-1 block w-full p-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-300"
                   required
                 >
                   <option value="">Select Instructor</option>
@@ -316,7 +336,7 @@ return (
                 name="level_id"
                 value={formData.level_id}
                 onChange={handleInputChange}
-                className="mt-1 block w-full p-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-300"
                 required
               >
                 <option value="">Select Level</option>
@@ -340,7 +360,7 @@ return (
                 value={formData.status}
                 onChange={handleInputChange}
                 maxLength={1}
-                className="mt-1 block w-full p-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-300"
                 required
               />
             </div>
@@ -352,7 +372,7 @@ return (
                 name="cost"
                 value={formData.cost}
                 onChange={handleInputChange}
-                className="mt-1 block w-full p-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-300"
                 required
               />
             </div>
@@ -364,7 +384,7 @@ return (
                 name="total_lessons"
                 value={formData.total_lessons}
                 onChange={handleInputChange}
-                className="mt-1 block w-full p-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-300"
                 required
               />
             </div>
@@ -377,7 +397,7 @@ return (
                 value={formData.capacity}
                 onChange={handleInputChange}
                 max="10"
-                className="mt-1 block w-full p-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-300"
                 required
               />
             </div>
@@ -389,7 +409,7 @@ return (
                 name="start_date"
                 value={formData.start_date}
                 onChange={handleInputChange}
-                className="mt-1 block w-full p-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-300"
                 required
               />
             </div>
@@ -400,33 +420,46 @@ return (
         </div>
       )}
 
-          {/* Lessons Display for ViewLessons */}
-          {view === 'ViewLessons' && (
-            <div className="w-full">
-              {data && data.length > 0 ? (
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                  {data.map((lesson, index) => (
-                    <div key={index} className="bg-gray-100 p-4 rounded-md shadow-md min-w-[250px] max-w-[400px] w-full relative">
-                      {/* Delete Button */}
+        {/* View Lessons View */}
+        {view === 'ViewLessons' && (
+          <div className="p-6">
+            {data && data.length > 0 ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {data.map((lesson, index) => (
+                  <div 
+                    key={index} 
+                    className="bg-white border border-gray-100 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 p-6 space-y-3 relative group"
+                  >
+                    <div className="absolute top-4 right-4 flex space-x-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                      <button 
+                        onClick={() => handleDeleteLesson(lesson.lesson_id)} 
+                        className="text-red-500 hover:text-red-700 bg-red-50 p-2 rounded-full"
+                      >
+                        <Trash2 size={20} />
+                      </button>
+                    </div>
 
-                      <p className="text-lg font-semibold">{lesson.lesson_name}</p>
-                      <p><strong>Instructor:</strong> {lesson.instructors?.users?.first_name || 'FN'} {lesson.instructors?.users?.last_name || 'LN'}</p>
+                    <h3 className="text-xl font-bold text-blue-900 mb-2">{lesson.lesson_name}</h3>
+                    <div className="space-y-1 text-gray-600">
+                      <p><strong>Instructor:</strong> {lesson.instructors?.users?.first_name || 'N/A'} {lesson.instructors?.users?.last_name || ''}</p>
                       <p><strong>Level:</strong> {lesson.lesson_levels.level_name}</p>
                       <p><strong>Status:</strong> {lesson.status}</p>
                       <p><strong>Cost:</strong> ${lesson.cost}</p>
                       <p><strong>Start Date:</strong> {new Date(lesson.start_date).toLocaleDateString()}</p>
                       <p><strong>Capacity:</strong> {lesson.capacity}</p>
-                      <button onClick={() => handleDeleteSession(lesson.lesson_id)} className="flex items-center gap-1 bg-gradient-to-b from-blue-300 to-purple-600 hover:text-red-500 ">
-                        <Trash2 size={20} /> Delete
-                      </button>
                     </div>
-                  ))}
-                </div>
-              ) : (
-                <p>No lessons found for this date.</p>
-              )}
-            </div>
-          )}
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="text-center py-12 bg-gray-50 rounded-xl">
+                <p className="text-gray-500 text-xl">No lessons found</p>
+              </div>
+            )}
+          </div>
+        )}
+      </div>
     </div>
   );
 }
+

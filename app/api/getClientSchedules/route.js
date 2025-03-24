@@ -41,16 +41,15 @@ export async function GET() {
         const start_time = new Date(schedule.start_time);
         const end_time = new Date(schedule.end_time);
 
-      // Convert times to 'HH:mm' format
-      const formattedStartTime = `${start_time.getHours().toString().padStart(2, '0')}:${start_time.getMinutes().toString().padStart(2, '0')}`;
-      const formattedEndTime = `${end_time.getHours().toString().padStart(2, '0')}:${end_time.getMinutes().toString().padStart(2, '0')}`;
+        // Convert times to 'HH:mm' format
+        const formattedStartTime = `${start_time.getHours().toString().padStart(2, '0')}:${start_time.getMinutes().toString().padStart(2, '0')}`;
+        const formattedEndTime = `${end_time.getHours().toString().padStart(2, '0')}:${end_time.getMinutes().toString().padStart(2, '0')}`;
+        const formattedDate = schedule.date? new Date(schedule.date).toISOString().split("T")[0] : null;
         
         const clientFirstName = schedule.clients?.users?.first_name;
         const clientLastName = schedule.clients?.users?.last_name;
         const lessonName = schedule.lessons.lesson_name;
-        const formattedDate = schedule.date? new Date(schedule.date).toISOString().split("T")[0] : null;
-
-      
+        
         return {
           client_id: schedule.client_id,
           start: formattedStartTime, // Return as Date object

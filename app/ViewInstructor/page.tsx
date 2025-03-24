@@ -18,21 +18,23 @@ const localizer = dateFnsLocalizer({
 
 interface InstructorSchedule {
   date: string;
-  start_time: string;
-  end_time: string;
-  instructor_id: string;
-  instructor_fn: string;
-  instructor_ln: string;
+  start: string;
+  end: string;
+  title: string;
+  client_first_name: string;
+  client_last_name: string;
+  lesson_name: string;
 }
 
 const CalendarPage: React.FC = () => {
   const [events, setEvents] = useState<Event[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
-  // Function to convert date and time into a Date object
+  // Function to convert 'HH:mm' to a Date object
   const convertToDate = (dateString: string, timeString: string): Date => {
     const [hours, minutes] = timeString.split(":").map(Number);
-    const date = new Date(`${dateString}T00:00:00Z`); // Set the date to midnight UTC
-    date.setHours(hours, minutes); // Set the correct hours and minutes in UTC
+    const date = new Date(`${dateString}T00:00:00Z`); // Ensure the date is in UTC
+    date.setHours(hours, minutes); // Set the correct hours and minutes
     return date;
   };
 
@@ -40,6 +42,7 @@ const CalendarPage: React.FC = () => {
   useEffect(() => {
     const fetchSchedule = async () => {
       try {
+        setIsLoading(true);
         const response = await fetch("/api/getInstSchedules");
         if (!response.ok) {
           throw new Error("Failed to fetch schedules");
@@ -50,8 +53,8 @@ const CalendarPage: React.FC = () => {
         const mappedEvents = data.map((schedule) => {
           const { date, start_time, end_time, instructor_fn, instructor_ln } = schedule;
 
-          const startDate = convertToDate(date, start_time); // Convert start time to Date object
-          const endDate = convertToDate(date, end_time); // Convert end time to Date object
+          const startDate = convertToDate(date, start_time);
+          const endDate = convertToDate(date, end_time);
 
           return {
             title: `${instructor_fn} ${instructor_ln}`,
@@ -59,62 +62,126 @@ const CalendarPage: React.FC = () => {
             end: endDate,
           };
         });
-
+        
         setEvents(mappedEvents);
+        setIsLoading(false);
       } catch (error) {
         console.error("Error fetching schedules:", error);
+        setIsLoading(false);
       }
     };
 
     fetchSchedule();
   }, []);
 
+   return (
+    <div className="min-h-screen bg-gradient-to-br from-indigo-50 to-blue-100 py-10 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-6xl mx-auto">
+        <div className="bg-white shadow-2xl rounded-2xl overflow-hidden transform transition-all duration-300 hover:scale-[1.01]">
+          {/* Header Section */}
+          <div className="bg-gradient-to-r from-indigo-600 to-purple-600 p-6">
+            <h1 className="text-3xl md:text-4xl font-extrabold text-white text-center tracking-tight">
+              Client Schedule
+            </h1>
+          </div>
+
+          {/* Loading State */}
+          {isLoading ? (
+            <div className="flex justify-center items-center h-[75vh]">
+              <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-indigo-500"></div>
+            </div>
+          ) : (
+            <Calendar
+              localizer={localizer}
+              events={events}
+              startAccessor="start"
+              endAccessor="end"
+              defaultView="month"
+              views={["month", "week", "day", "agenda"]}
+              className="p-4"
+              style={{
+                height: "75vh",
+              }}
+              dayPropGetter={(date) => {
+                const dayOfWeek = date.getDay();
+                const isToday = date.toDateString() === new Date().toDateString();
+                const isWeekend = dayOfWeek === 0 || dayOfWeek === 6;
+                return {
+                  className: `
+                    ${isWeekend ? 'bg-gray-50' : 'bg-white'}
+                    ${isToday ? 'ring-2 ring-indigo-500 ring-opacity-50' : ''}
+                    hover:bg-indigo-50 transition-colors duration-200
+                  `,
+                };
+              }}
+              eventPropGetter={(event) => ({
+                className: `
+                  bg-gradient-to-r from-indigo-600 to-purple-600 
+                  text-white 
+                  rounded-lg 
+                  p-2 
+                  text-sm 
+                  font-semibold 
+                  shadow-md 
+                  hover:scale-[1.02] 
+                  transition-transform 
+                  duration-200
+                `,
+              })}
+              components={{
+                toolbar: CustomToolbar,
+              }}
+            />
+          )}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// Custom Toolbar Component
+const CustomToolbar = (toolbar: any) => {
   return (
-    <div className="flex flex-col items-center p-6 bg-gray-100 min-h-screen">
-      <h1 className="text-4xl font-bold mb-6 text-blue-900">Instructor Schedule</h1>
-      <div className="w-full max-w-4xl rounded-lg shadow-xl overflow-hidden bg-white">
-        <Calendar
-          localizer={localizer}
-          events={events}
-          startAccessor="start"
-          endAccessor="end"
-          defaultView="month"
-          views={["month", "week", "day", "agenda"]}
-          style={{
-            height: "75vh", // Set calendar height
-          }}
-          // Day styling with custom theme
-          dayPropGetter={(date) => {
-            const dayOfWeek = date.getDay();
-            const isWeekend = dayOfWeek === 0 || dayOfWeek === 6;
-            return {
-              style: {
-                backgroundColor: isWeekend ? "#f0f4f8" : "#ffffff", // Light gray for weekends, white for weekdays
-                border: "1px solid #e5e7eb", // Subtle border
-              },
-            };
-          }}
-          // Event styling with custom theme
-          eventPropGetter={(event) => ({
-            style: {
-              backgroundColor: "#8E24AA", // Purple color for events
-              color: "#fff",
-              borderRadius: "8px",
-              padding: "8px 12px",
-              fontWeight: "bold",
-            },
-          })}
-          // Header styling
-          toolbarPropGetter={() => ({
-            style: {
-              backgroundColor: "#3b82f6", // Blue background for the header
-              color: "#ffffff", // White text in the header
-              padding: "10px",
-              fontSize: "16px",
-              fontWeight: "bold",
-            },
-          })}
-        />
+    <div className="rbc-toolbar flex justify-between items-center p-4 bg-gray-100">
+      <div className="flex items-center space-x-2">
+        <button 
+          onClick={() => toolbar.onNavigate('PREV')} 
+          className="px-3 py-1 bg-indigo-500 text-white rounded-md hover:bg-indigo-600 transition-colors"
+        >
+          Prev
+        </button>
+        <button 
+          onClick={() => toolbar.onNavigate('TODAY')} 
+          className="px-3 py-1 bg-indigo-500 text-white rounded-md hover:bg-indigo-600 transition-colors"
+        >
+          Today
+        </button>
+        <button 
+          onClick={() => toolbar.onNavigate('NEXT')} 
+          className="px-3 py-1 bg-indigo-500 text-white rounded-md hover:bg-indigo-600 transition-colors"
+        >
+          Next
+        </button>
+      </div>
+      <div className="text-xl font-semibold text-gray-800">
+        {toolbar.label}
+      </div>
+      <div className="flex items-center space-x-2">
+        {toolbar.views.map((view: string) => (
+          <button
+            key={view}
+            onClick={() => toolbar.onView(view)}
+            className={`
+              px-3 py-1 rounded-md transition-colors
+              ${toolbar.view === view 
+                ? 'bg-indigo-600 text-white' 
+                : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+              }
+            `}
+          >
+            {view}
+          </button>
+        ))}
       </div>
     </div>
   );
