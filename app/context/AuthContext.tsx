@@ -1,21 +1,41 @@
 'use client';  
 import React, { createContext, useContext, useState, useEffect } from "react";
+import jwt from 'jsonwebtoken';
 
-// Define authentication context
-const AuthContext = createContext<{ isLoggedIn: boolean; setIsLoggedIn: (value: boolean) => void }>({
+// Define the shape of the authentication context
+interface AuthContextType {
+  isLoggedIn: boolean;
+  setIsLoggedIn: (value: boolean) => void;
+  userRole: string;
+  setUserRole: (role: string) => void;
+}
+
+// Create the authentication context with a default value
+const AuthContext = createContext<AuthContextType>({
   isLoggedIn: false,
   setIsLoggedIn: () => {},
+  userRole: 'user',
+  setUserRole: () => {}
 });
 
 // Provide authentication context
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [isLoggedIn, setIsLoggedInState] = useState<boolean>(false);
+  const [userRole, setUserRoleState] = useState<string>('user');
 
-  // Load authentication state from localStorage on mount
+  // Load authentication state and role from localStorage on mount
   useEffect(() => {
-    const storedAuth = localStorage.getItem("isLoggedIn");
-    if (storedAuth === "true") {
-      setIsLoggedInState(true);
+    const token = localStorage.getItem("token");
+    if (token) {
+      try {
+        const decodedToken: any = jwt.decode(token);
+        if (decodedToken) {
+          setIsLoggedInState(true);
+          setUserRoleState(decodedToken.role || 'user');
+        }
+      } catch (error) {
+        console.error("Error decoding token:", error);
+      }
     }
   }, []);
 
@@ -23,9 +43,29 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const setIsLoggedIn = (value: boolean) => {
     setIsLoggedInState(value);
     localStorage.setItem("isLoggedIn", value.toString());
+    
+    // Clear token and role if logging out
+    if (!value) {
+      localStorage.removeItem("token");
+      setUserRoleState('user');
+    }
   };
 
-  return <AuthContext.Provider value={{ isLoggedIn, setIsLoggedIn }}>{children}</AuthContext.Provider>;
+  // Set user role
+  const setUserRole = (role: string) => {
+    setUserRoleState(role);
+  };
+
+  return (
+    <AuthContext.Provider value={{ 
+      isLoggedIn, 
+      setIsLoggedIn, 
+      userRole, 
+      setUserRole 
+    }}>
+      {children}
+    </AuthContext.Provider>
+  );
 };
 
 // Custom hook to use authentication context

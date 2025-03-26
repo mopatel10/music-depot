@@ -92,6 +92,12 @@ model lessons {
   registration    registration[]
 }
 
+model admin {
+  admin_id   String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  user_id    String @unique @db.Uuid
+  users      users  @relation(fields: [user_id], references: [user_id], onDelete: Cascade, onUpdate: NoAction)
+}
+
 model registration {
   registration_id String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   client_id       String   @db.Uuid
@@ -124,4 +130,5 @@ model users {
   password     String?      @db.VarChar
   clients      clients?
   instructors  instructors?
+  admin        admin?
 }

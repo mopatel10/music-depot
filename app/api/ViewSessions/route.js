@@ -23,6 +23,17 @@ export async function GET() {
             },
           },
         },
+        clients: {
+          select: {
+            client_id: true,
+            users: {
+              select: {
+                first_name: true,
+                last_name: true,
+              },
+            },
+          },
+        },
         lessons: {
           select: {
             lesson_id: true,

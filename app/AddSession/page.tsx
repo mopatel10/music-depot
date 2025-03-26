@@ -8,6 +8,7 @@ function AddSessions() {
     lesson_id: '',        
     instructor_id: '',
     room_id: '',
+    client_id: '',  
     start_time: '',
     end_time: '',
     cancelled: false,
@@ -18,19 +19,22 @@ function AddSessions() {
   const [instructors, setInstructors] = useState([]);
   const [rooms, setRooms] = useState([]);
   const [lessons, setLessons] = useState([]);
+  const [clients, setClients] = useState([]);  
   const router = useRouter();
 
   useEffect(() => {
     async function fetchData() {
       try {
-        const [lessonsRes, instructorsRes, roomsRes] = await Promise.all([
+        const [lessonsRes, instructorsRes, roomsRes, clientsRes] = await Promise.all([
           fetch('/api/getLessons'),
           fetch('/api/getInstructors'),
           fetch('/api/getRooms'),
+          fetch('/api/getClients')
         ]);
         if (lessonsRes.ok) setLessons(await lessonsRes.json());
         if (instructorsRes.ok) setInstructors(await instructorsRes.json());
         if (roomsRes.ok) setRooms(await roomsRes.json());
+        if (clientsRes.ok) setClients(await clientsRes.json());
       } catch (error) {
         console.error("Error fetching data:", error);
       }
@@ -49,8 +53,7 @@ function AddSessions() {
   const handleFormSubmit = async (e) => {
     e.preventDefault();
     
-    // Validation logic remains the same as in previous implementation
-    if (!formData.lesson_id || !formData.instructor_id || !formData.room_id || !formData.start_time || !formData.end_time) {
+    if (!formData.lesson_id || !formData.instructor_id || !formData.room_id || !formData.client_id || !formData.start_time || !formData.end_time) {
       return alert('Please fill all required fields.');
     }
   
@@ -82,6 +85,7 @@ function AddSessions() {
         lesson_id: '',
         instructor_id: '',
         room_id: '',
+        client_id: '',
         start_time: '',
         end_time: '',
         cancelled: false,
@@ -180,6 +184,31 @@ function AddSessions() {
                 </select>
               </div>
 
+              {/* Client Dropdown */}
+              <div className="space-y-2">
+                <label className="block text-sm font-medium text-gray-700">Client</label>
+                <select 
+                  name="client_id" 
+                  value={formData.client_id} 
+                  onChange={handleInputChange} 
+                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-300"
+                  required
+                >
+                  <option value="">Select Client</option>
+                  {clients.length > 0 ? (
+                    clients.map((client) => (
+                      <option key={client.client_id} value={client.client_id}>
+                        {client.first_name} {client.last_name}
+                      </option>
+                    ))
+                  ) : (
+                    <option value="">No clients available</option>
+                  )}
+                </select>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {/* Start Time */}
               <div className="space-y-2">
                 <label className="block text-sm font-medium text-gray-700">Start Time</label>
@@ -192,9 +221,7 @@ function AddSessions() {
                   required
                 />
               </div>
-            </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {/* End Time */}
               <div className="space-y-2">
                 <label className="block text-sm font-medium text-gray-700">End Time</label>
@@ -207,7 +234,9 @@ function AddSessions() {
                   required
                 />
               </div>
+            </div>
 
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {/* Attending Capacity */}
               <div className="space-y-2">
                 <label className="block text-sm font-medium text-gray-700">Attending Capacity</label>
@@ -220,9 +249,7 @@ function AddSessions() {
                   required
                 />
               </div>
-            </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {/* Date */}
               <div className="space-y-2">
                 <label className="block text-sm font-medium text-gray-700">Date</label>
@@ -234,7 +261,9 @@ function AddSessions() {
                   className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-300"
                 />
               </div>
+            </div>
 
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {/* Cancelled Checkbox */}
               <div className="flex items-center space-x-3 pt-6">
                 <input

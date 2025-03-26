@@ -38,6 +38,7 @@ export async function POST(req) {
         cancelled: body.cancelled || false,
         attendingcapacity: body.attendingcapacity,
         date: date,
+        client_id: body.client_id
       },
     });
 

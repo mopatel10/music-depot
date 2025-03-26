@@ -7,7 +7,7 @@ import "../public/styles/globals.css";
 import axios from "axios";
 
 const LoginPage: React.FC = () => {
-  const { setIsLoggedIn } = useAuth();
+  const { setIsLoggedIn, setUserRole } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
@@ -25,8 +25,13 @@ const LoginPage: React.FC = () => {
   
       if (res.status !== 200) throw new Error(res.data.error || "Login failed");
   
+      // Store token and update login state
       localStorage.setItem("token", res.data.token);
       setIsLoggedIn(true);
+      
+      // Set the user role
+      setUserRole(res.data.role);
+      
       router.push("/ViewLessons");
   
     } catch (error: any) {
