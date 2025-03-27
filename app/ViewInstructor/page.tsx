@@ -81,7 +81,7 @@ const CalendarPage: React.FC = () => {
           {/* Header Section */}
           <div className="bg-gradient-to-r from-indigo-600 to-purple-600 p-6">
             <h1 className="text-3xl md:text-4xl font-extrabold text-white text-center tracking-tight">
-              Client Schedule
+              Instructor Schedule
             </h1>
           </div>
 

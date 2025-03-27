@@ -43,9 +43,9 @@ const Sidebar: React.FC<{ onToggle?: (collapsed: boolean) => void }> = ({ onTogg
 
   // Updated render condition functions for different roles
   const canViewLessons = () => ['admin', 'instructor', 'client'].includes(userRole);
-  const canManageLessons = () => ['admin', 'instructor'].includes(userRole);
+  const canManageLessons = () => ['admin'].includes(userRole);
   const canViewSessions = () => ['admin', 'instructor', 'client'].includes(userRole);
-  const canManageSessions = () => ['admin', 'instructor'].includes(userRole);
+  const canManageSessions = () => ['admin'].includes(userRole);
   const canViewClientSchedule = () => ['admin','client'].includes(userRole);
   const canViewInstructorSchedule = () => ['instructor', 'admin'].includes(userRole);
   const canManageUsers = () => ['admin'].includes(userRole);
@@ -66,8 +66,11 @@ const Sidebar: React.FC<{ onToggle?: (collapsed: boolean) => void }> = ({ onTogg
 
       <div className="p-2">
         {/* Title */}
-        {!isCollapsed && <h2 className="text-xl font-bold mb-6 pl-3 ">Your Music Depot</h2>}
-
+        {!isCollapsed && (
+        <h2 className="text-xl font-bold mb-6 pl-3 text-gray-700 dark:text-gray-200">
+          Your Music Depot
+        </h2>
+      )}
         <ul className="space-y-2">
           {/* Lessons */}
           {canViewLessons() && (
