@@ -5,10 +5,13 @@ import { useRouter } from "next/navigation";
 
 export default function AddLessons() {
   const router = useRouter();
-  const [instructors, setInstructors] = useState([]);
+  const [allInstructors, setAllInstructors] = useState([]); // Store all instructors
+  const [filteredInstructors, setFilteredInstructors] = useState([]); // Filtered instructors based on level
   const [levels, setLevels] = useState([]);
+  const [instruments, setInstruments] = useState([]);
   const [formData, setFormData] = useState({
     lesson_name: '',
+    instrument_id: '',
     level_id: '',
     status: '',
     cost: '',
@@ -23,9 +26,50 @@ export default function AddLessons() {
       const response = await fetch('/api/getInstructors');
       if (!response.ok) throw new Error('Failed to fetch instructors');
       const result = await response.json();
-      setInstructors(result);
+      setAllInstructors(result);
+      setFilteredInstructors(result); // Initially show all instructors
     } catch (error) {
       console.error('Error fetching instructors:', error);
+    }
+  };
+
+  const fetchInstruments = async () => {
+    try {
+      const response = await fetch('/api/getInstruments');
+      if (!response.ok) throw new Error('Failed to fetch instruments');
+      const result = await response.json();
+      setInstruments(result);
+    } catch (error) {
+      console.error('Error fetching instruments:', error);
+    }
+  };
+
+  const fetchAllLevels = async () => {
+    try {
+      const response = await fetch('/api/getAllLevels');
+      if (!response.ok) throw new Error('Failed to fetch all levels');
+      const result = await response.json();
+      setLevels(result);
+    } catch (error) {
+      console.error('Error fetching all levels:', error);
+      setLevels([]);
+    }
+  };
+
+  const fetchInstructorsForLevel = async (levelId) => {
+    try {
+      const response = await fetch(`/api/getInstructorsForLevel?levelId=${levelId}`);
+      if (!response.ok) throw new Error('Failed to fetch instructors for level');
+      const result = await response.json();
+      setFilteredInstructors(result);
+      
+      // If the currently selected instructor is not in the filtered list, clear the selection
+      if (formData.instructor_id && !result.some(instructor => instructor.instructor_id === formData.instructor_id)) {
+        setFormData(prev => ({ ...prev, instructor_id: '' }));
+      }
+    } catch (error) {
+      console.error('Error fetching instructors for level:', error);
+      setFilteredInstructors([]);
     }
   };
 
@@ -33,15 +77,19 @@ export default function AddLessons() {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
 
-    if (name === 'instructor_id' && value) {
-      try {
-        const response = await fetch(`/api/getLevels?instructorId=${value}`);
-        if (!response.ok) throw new Error('Failed to fetch levels');
-        const result = await response.json();
-        setLevels(result);
-      } catch (error) {
-        console.error('Error fetching levels:', error);
-        setLevels([]);
+    // When level is selected, filter instructors who can teach that level or higher
+    if (name === 'level_id' && value) {
+      await fetchInstructorsForLevel(value);
+    }
+
+    // When an instrument is selected, use its name as the lesson name
+    if (name === 'instrument_id' && value) {
+      const selectedInstrument = instruments.find(inst => inst.instrument_id.toString() === value);
+      if (selectedInstrument) {
+        setFormData(prev => ({
+          ...prev,
+          lesson_name: `${selectedInstrument.instrument_name} Lesson`
+        }));
       }
     }
   };
@@ -50,7 +98,7 @@ export default function AddLessons() {
     e.preventDefault();
 
     // Validate required fields
-    if (!formData.lesson_name || !formData.level_id || !formData.status) {
+    if (!formData.instrument_id || !formData.level_id || !formData.status) {
       return alert('Please fill all required fields.');
     }
 
@@ -89,6 +137,7 @@ export default function AddLessons() {
       alert('Lesson added successfully!');
       setFormData({
         lesson_name: '',
+        instrument_id: '',
         level_id: '',
         status: '',
         cost: '',
@@ -106,6 +155,8 @@ export default function AddLessons() {
 
   useEffect(() => {
     fetchInstructors();
+    fetchInstruments();
+    fetchAllLevels(); // Fetch all levels at component load
   }, []);
 
   return (
@@ -121,6 +172,28 @@ export default function AddLessons() {
           <form onSubmit={handleFormSubmit} className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="space-y-2">
+                <label className="block text-sm font-medium text-gray-700">Instrument</label>
+                {instruments.length === 0 ? (
+                  <p>Loading instruments...</p>
+                ) : (
+                  <select
+                    name="instrument_id"
+                    value={formData.instrument_id}
+                    onChange={handleInputChange}
+                    className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-300"
+                    required
+                  >
+                    <option value="">Select Instrument</option>
+                    {instruments.map((inst) => (
+                      <option key={inst.instrument_id} value={inst.instrument_id}>
+                        {inst.instrument_name}
+                      </option>
+                    ))}
+                  </select>
+                )}
+              </div>
+
+              <div className="space-y-2">
                 <label className="block text-sm font-medium text-gray-700">Lesson Name</label>
                 <input
                   type="text"
@@ -129,30 +202,9 @@ export default function AddLessons() {
                   onChange={handleInputChange}
                   className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-300"
                   required
-                  placeholder="Enter lesson name"
+                  placeholder="Lesson name will auto-populate"
+                  readOnly
                 />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700">Instructor</label>
-                {instructors.length === 0 ? (
-                  <p>Loading instructors...</p>
-                ) : (
-                  <select
-                    name="instructor_id"
-                    value={formData.instructor_id}
-                    onChange={handleInputChange}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-300"
-                    required
-                  >
-                    <option value="">Select Instructor</option>
-                    {instructors.map((inst) => (
-                      <option key={inst.instructor_id} value={inst.instructor_id}>
-                        {inst.first_name} {inst.last_name}
-                      </option>
-                    ))}
-                  </select>
-                )}
               </div>
 
               <div>
@@ -175,6 +227,28 @@ export default function AddLessons() {
                     <option value="">No levels available</option>
                   )}
                 </select>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700">Instructor</label>
+                {filteredInstructors.length === 0 ? (
+                  <p>No instructors available for selected level</p>
+                ) : (
+                  <select
+                    name="instructor_id"
+                    value={formData.instructor_id}
+                    onChange={handleInputChange}
+                    className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-300"
+                    required
+                  >
+                    <option value="">Select Instructor</option>
+                    {filteredInstructors.map((inst) => (
+                      <option key={inst.instructor_id} value={inst.instructor_id}>
+                        {inst.first_name} {inst.last_name}
+                      </option>
+                    ))}
+                  </select>
+                )}
               </div>
 
               <div>

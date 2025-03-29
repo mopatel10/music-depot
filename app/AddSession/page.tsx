@@ -19,7 +19,8 @@ function AddSessions() {
   const [instructors, setInstructors] = useState([]);
   const [rooms, setRooms] = useState([]);
   const [lessons, setLessons] = useState([]);
-  const [clients, setClients] = useState([]);  
+  const [clients, setClients] = useState([]);
+  const [lessonInstructorMap, setLessonInstructorMap] = useState({});
   const router = useRouter();
 
   useEffect(() => {
@@ -31,10 +32,29 @@ function AddSessions() {
           fetch('/api/getRooms'),
           fetch('/api/getClients')
         ]);
-        if (lessonsRes.ok) setLessons(await lessonsRes.json());
+        
+        let lessonsData = [];
+        let instructorMap = {};
+        
+        if (lessonsRes.ok) {
+          lessonsData = await lessonsRes.json();
+          setLessons(lessonsData);
+          
+          // Create a map of lesson_id to instructor_id from the lessons data
+          instructorMap = lessonsData.reduce((map, lesson) => {
+            // Your getLessons API doesn't return instructor_id directly in the formatted data
+            // But we can extract it from the instructor_name
+            map[lesson.lesson_id] = lesson.instructor_id;
+            return map;
+          }, {});
+          
+          setLessonInstructorMap(instructorMap);
+        }
+        
         if (instructorsRes.ok) setInstructors(await instructorsRes.json());
         if (roomsRes.ok) setRooms(await roomsRes.json());
         if (clientsRes.ok) setClients(await clientsRes.json());
+        
       } catch (error) {
         console.error("Error fetching data:", error);
       }
@@ -44,10 +64,23 @@ function AddSessions() {
 
   const handleInputChange = (e) => {
     const { name, value, type, checked } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: type === 'checkbox' ? checked : value,
-    }));
+    
+    if (name === 'lesson_id' && value) {
+      // If a lesson is selected, look up the corresponding instructor
+      const instructorId = lessonInstructorMap[value];
+      
+      setFormData(prev => ({
+        ...prev,
+        [name]: value,
+        // Auto-fill the instructor if we have a matching instructor
+        instructor_id: instructorId || ''
+      }));
+    } else {
+      setFormData(prev => ({
+        ...prev,
+        [name]: type === 'checkbox' ? checked : value,
+      }));
+    }
   };
 
   const handleFormSubmit = async (e) => {
@@ -145,6 +178,7 @@ function AddSessions() {
                   onChange={handleInputChange} 
                   className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-300"
                   required
+                  disabled={formData.lesson_id !== ''} // Disable when a lesson is selected
                 >
                   <option value="">Select Instructor</option>
                   {instructors.length > 0 ? (
@@ -157,6 +191,11 @@ function AddSessions() {
                     <option value="">No instructors available</option>
                   )}
                 </select>
+                {formData.lesson_id !== '' && (
+                  <p className="text-xs text-blue-600 mt-1">
+                    Instructor auto-selected based on lesson
+                  </p>
+                )}
               </div>
             </div>
 

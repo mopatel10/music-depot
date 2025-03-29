@@ -46,12 +46,13 @@ const LoginPage: React.FC = () => {
   return (
     <div className="flex justify-center items-center h-screen bg-gray-100 relative overflow-hidden">
       {/* Floating Symbols */}
-      <div className="absolute text-blue-500 opacity-10 text-[300px] top-[10%] left-[5%] animate-float1">
+      <div className="absolute text-pink-500 opacity-10 text-[300px] top-[10%] left-[5%] animate-float1">
         ♪ ♫ ♬ ♭ ♮ ♯ ♪
       </div>
-      <div className="absolute text-pink-500 opacity-10 text-[250px] top-[70%] left-[60%] animate-float2">
+      <div className="absolute text-blue-500 opacity-10 text-[250px] top-[70%] left-[60%] animate-float2">
         ♪ ♫ ♬ ♭ ♮ ♯ ♪
       </div>
+      
 
       <div className="bg-gradient-to-b from-blue-300 to-pink-500 p-8 rounded-xl shadow-lg text-center w-96 relative z-10">
         <div className="text-3xl font-bold text-blue-500 flex justify-center items-center mb-4">

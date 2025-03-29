@@ -8,6 +8,7 @@ export async function GET() {
       select: {
         lesson_id:true,
         lesson_name:true,
+        instructor_id: true,
         instructors: {
           include: {
             users: {
@@ -21,12 +22,13 @@ export async function GET() {
       },
     });
 
-    // Transform and return lesson data with instructor name
-    const formattedData = lessons.map((lesson) => ({
-      lesson_id: lesson.lesson_id,
-      lesson_name: lesson.lesson_name,
-      instructor_name: `${lesson.instructors.users.first_name} ${lesson.instructors.users.last_name}`,
-    }));
+// Transform and return lesson data with instructor name AND instructor_id
+const formattedData = lessons.map((lesson) => ({
+  lesson_id: lesson.lesson_id,
+  lesson_name: lesson.lesson_name,
+  instructor_id: lesson.instructor_id, // Include this
+  instructor_name: `${lesson.instructors.users.first_name} ${lesson.instructors.users.last_name}`,
+}));
 
     return NextResponse.json(formattedData);
   } catch (error) {

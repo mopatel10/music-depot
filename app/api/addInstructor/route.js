@@ -9,7 +9,9 @@ export async function POST(req) {
     email, 
     phoneNumber, 
     password, 
-    employmentType 
+    employmentType,
+    instrumentId,
+    levelId
   } = await req.json();
 
   // Validate all required fields
@@ -17,35 +19,53 @@ export async function POST(req) {
     return NextResponse.json({ error: 'All fields are required' }, { status: 400 });
   }
 
+  // Validate instructor specialty fields if they're needed
+  if (!instrumentId || !levelId) {
+    return NextResponse.json({ error: 'Instrument and level are required for instructors' }, { status: 400 });
+  }
+
   try {
     // Hash the password
     const saltRounds = 10;
     const hashedPassword = await bcrypt.hash(password, saltRounds);
 
-    // Create a user
-    const user = await prisma.users.create({
-      data: {
-        first_name: firstName,
-        last_name: lastName,
-        email,
-        phone_number: phoneNumber,
-        password: hashedPassword,
-        status: 'A', // Assuming 'A' for active
-      },
-    });
+    // Use transaction to ensure all operations succeed or fail together
+    const result = await prisma.$transaction(async (prisma) => {
+      // Create a user
+      const user = await prisma.users.create({
+        data: {
+          first_name: firstName,
+          last_name: lastName,
+          email,
+          phone_number: phoneNumber,
+          password: hashedPassword,
+          status: 'A', // Assuming 'A' for active
+        },
+      });
 
-    // Create an instructor associated with the user
-    const instructor = await prisma.instructors.create({
-      data: {
-        user_id: user.user_id,
-        employment_type: employmentType,
-      },
+      // Create an instructor associated with the user
+      const instructor = await prisma.instructors.create({
+        data: {
+          user_id: user.user_id,
+          employment_type: employmentType,
+        },
+      });
+
+      // Create an instructor specialty record
+      const specialty = await prisma.instructor_specialty.create({
+        data: {
+          instructor_id: instructor.instructor_id,
+          instrument_id: parseInt(instrumentId), // Convert to integer as per schema
+          level_id: levelId,
+        },
+      });
+
+      return { user, instructor, specialty };
     });
 
     return NextResponse.json({ 
       message: 'Instructor added successfully', 
-      user,
-      instructor 
+      instructor_id: result.instructor.instructor_id
     }, { status: 201 });
   } catch (error) {
     console.error(error);
