@@ -30,6 +30,51 @@ export async function POST(req) {
       }
     }
 
+    // Check if the instructor already has an availability at the specified time
+    const existingAvailability = await prisma.instructor_availability.findFirst({
+      where: {
+        instructor_id: body.instructor_id,
+        date: date,
+        AND: [
+          {
+            OR: [
+              {
+                // New start time falls within existing session
+                AND: [
+                  { start_time: { lte: startTime } },
+                  { end_time: { gt: startTime } }
+                ]
+              },
+              {
+                // New end time falls within existing session
+                AND: [
+                  { start_time: { lt: endTime } },
+                  { end_time: { gte: endTime } }
+                ]
+              },
+              {
+                // New session completely contains existing session
+                AND: [
+                  { start_time: { gte: startTime } },
+                  { end_time: { lte: endTime } }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    });
+
+    if (existingAvailability) {
+      return NextResponse.json(
+        { 
+          error: "Instructor already has availability during this time period",
+          conflicting_session: existingAvailability
+        },
+        { status: 409 }
+      );
+    }
+
     // Create session
     const session = await prisma.instructor_availability
     .create({
