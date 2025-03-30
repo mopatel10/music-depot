@@ -27,6 +27,65 @@ export async function POST(req) {
       }
     }
 
+    // Check if client_id is provided (since it's optional)
+    if (body.client_id) {
+      // Check if the client is already booked at this time
+      const existingClientBooking = await prisma.lesson_schedule.findFirst({
+        where: {
+          client_id: body.client_id,
+          date: date,
+          AND: [
+            {
+              OR: [
+                {
+                  // New start time falls within existing booking
+                  AND: [
+                    { start_time: { lte: startTime } },
+                    { end_time: { gt: startTime } }
+                  ]
+                },
+                {
+                  // New end time falls within existing booking
+                  AND: [
+                    { start_time: { lt: endTime } },
+                    { end_time: { gte: endTime } }
+                  ]
+                },
+                {
+                  // New booking completely contains existing booking
+                  AND: [
+                    { start_time: { gte: startTime } },
+                    { end_time: { lte: endTime } }
+                  ]
+                }
+              ]
+            }
+          ],
+          cancelled: false
+        },
+        include: {
+          lessons: {
+            select: {
+              lesson_name: true
+            }
+          }
+        }
+      });
+
+      if (existingClientBooking) {
+        return NextResponse.json({
+          error: "Client is already booked during this time period",
+          conflicting_session: {
+            session_id: existingClientBooking.session_id,
+            lesson_name: existingClientBooking.lessons.lesson_name,
+            start_time: existingClientBooking.start_time,
+            end_time: existingClientBooking.end_time,
+            date: existingClientBooking.date
+          }
+        }, { status: 409 });
+      }
+    }
+
     // Create session
     const session = await prisma.lesson_schedule.create({
       data: {
