@@ -86,6 +86,58 @@ export async function POST(req) {
       }
     }
 
+    // Check if room is booked during this time
+    const existingRoomBooking = await prisma.lesson_schedule.findFirst({
+      where: {
+        room_id: body.room_id,
+        date: date,
+        AND: [
+          {
+            OR: [
+              {
+                // New start time is within the existing booking
+                AND: [
+                  { start_time: { lte: startTime } },
+                  { end_time: { gt: startTime } }
+                ]
+              },
+              {
+                // New end time is within the existing booking
+                AND: [
+                  { start_time: { lt: endTime } },
+                  { end_time: { gte: endTime } }
+                ]
+              },
+              {
+                // new booking is completely within a current booking 
+                AND: [
+                  { start_time: { gte: startTime } },
+                  { end_time: { lte: endTime } }
+                ]
+              }
+            ]
+          }
+        ],
+        cancelled: false
+      },
+      include: {
+        lessons: { select: { lesson_name: true } }
+      }
+    });
+
+    if (existingRoomBooking) {
+      return NextResponse.json({
+        error: "Room is already booked during this time period",
+        conflicting_session: {
+          session_id: existingRoomBooking.session_id,
+          lesson_name: existingRoomBooking.lessons.lesson_name,
+          start_time: existingRoomBooking.start_time,
+          end_time: existingRoomBooking.end_time,
+          date: existingRoomBooking.date
+        }
+      }, { status: 409 });
+    }
+
     // Create session
     const session = await prisma.lesson_schedule.create({
       data: {
