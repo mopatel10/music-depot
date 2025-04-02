@@ -2,13 +2,22 @@
 
 import React, { useEffect, useState } from 'react';
 import { Trash2, XCircle } from "lucide-react";
+import { useAuth } from "../context/AuthContext"; 
 
 export default function ViewSessions() {
   const [sessions, setSessions] = useState([]);
+  const { userId, userRole } = useAuth();
 
   const fetchSessions = async () => {
     try {
-      const response = await fetch('/api/ViewSessions');
+
+      const isAdmin = userRole === 'admin';
+      const url = isAdmin 
+        ? '/api/ViewSessions'
+        : `/api/ViewSessions${userId ? `?id=${userId}` : ''}`;
+
+      const response = await fetch(url);
+
       if (!response.ok) throw new Error('Failed to fetch sessions');
       const result = await response.json();
       setSessions(result);
