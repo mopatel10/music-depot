@@ -62,8 +62,49 @@ function AddSessions() {
     fetchData();
   }, []);
 
+  // Fetch available rooms dynamically based on selected date and/or time
+  useEffect(() => {
+    // Only fetch if all necessary fields are provided.
+    if (!formData.date || !formData.start_time || !formData.end_time) return;
+
+    console.log("Fetching available rooms with:", {
+      date: formData.date,
+      start_time: formData.start_time,
+      end_time: formData.end_time,
+    });
+
+    async function fetchAvailableRooms() {
+      try {
+        // Construct query parameters
+        const queryParams = new URLSearchParams({
+          date: formData.date,
+          start_time: formData.start_time, 
+          end_time: formData.end_time,
+        });
+        // Call the new API endpoint
+        const response = await fetch(`/api/getAvailableRooms?${queryParams.toString()}`);
+        if (response.ok) {
+          const availableRooms = await response.json();
+
+          console.log("Available rooms received:", availableRooms);
+
+          setRooms(availableRooms);
+        } else {
+          // If there is an error, clear the rooms (or handle it as needed)
+          setRooms([]);
+          console.error("Error fetching available rooms");
+        }
+      } catch (error) {
+        console.error("Error in fetchAvailableRooms:", error);
+      }
+    }
+    fetchAvailableRooms();
+  }, [formData.date, formData.start_time, formData.end_time]);
+
   const handleInputChange = (e) => {
     const { name, value, type, checked } = e.target;
+
+    console.log("handleInputChange =>", name, value);
     
     if (name === 'lesson_id' && value) {
       // If a lesson is selected, look up the corresponding instructor
@@ -98,7 +139,16 @@ function AddSessions() {
   
     const startTime = new Date(formData.start_time).toISOString();
     const endTime = new Date(formData.end_time).toISOString();
-    const date = formData.date ? new Date(formData.date).toISOString().split('T')[0] : null;
+
+    let date = null;
+    if (formData.date) {
+      const localDate = new Date(formData.date + "T00:00:00");
+      const adjustedDate = new Date(localDate.getTime() - localDate.getTimezoneOffset() * 60000).toISOString();
+      date = adjustedDate;
+    }
+
+    //const date = formData.date ? new Date(formData.date + "T00:00:00Z").toISOString() : null;
+    //const date = formData.date ? new Date(formData.date).toISOString().split('T')[0] : null;
   
     try {
       const response = await fetch('/api/addSession', {
