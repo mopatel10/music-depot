@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 
 export async function DELETE(req, { params }) {
-  const { id } = params; // Extract the lesson ID from params
+  const { id } = await params; // Extract the lesson ID from params
 
   try {
     // Delete the lesson from the database using the correct field name 'lesson_id'

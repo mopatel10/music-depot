@@ -27,6 +27,30 @@ export async function POST(req) {
       }
     }
 
+    // Check if the lesson exists and get its capacity
+    const lesson = await prisma.lessons.findUnique({
+      where: {
+        lesson_id: body.lesson_id
+      },
+      select: {
+        capacity: true,
+        lesson_name: true
+      }
+    });
+
+    if (!lesson) {
+      return NextResponse.json({ error: "Lesson not found" }, { status: 404 });
+    }
+
+    // Check if attendingCapacity exceeds lesson capacity
+    if (body.attendingcapacity && body.attendingcapacity > lesson.capacity) {
+      return NextResponse.json({
+        error: "Attending capacity exceeds lesson capacity",
+        lesson_capacity: lesson.capacity,
+        requested_capacity: body.attendingcapacity
+      }, { status: 400 });
+    }
+
     // Check if client_id is provided (since it's optional)
     if (body.client_id) {
       // Check if the client is already booked at this time

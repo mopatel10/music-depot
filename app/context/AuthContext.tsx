@@ -8,6 +8,8 @@ interface AuthContextType {
   setIsLoggedIn: (value: boolean) => void;
   userRole: string;
   setUserRole: (role: string) => void;
+  userId: string | null;
+  setUserId: (id: string | null) => void;
 }
 
 // Create the authentication context with a default value
@@ -15,15 +17,18 @@ const AuthContext = createContext<AuthContextType>({
   isLoggedIn: false,
   setIsLoggedIn: () => {},
   userRole: 'user',
-  setUserRole: () => {}
+  setUserRole: () => {},
+  userId: null,
+  setUserId: () => {}
 });
 
 // Provide authentication context
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [isLoggedIn, setIsLoggedInState] = useState<boolean>(false);
   const [userRole, setUserRoleState] = useState<string>('user');
+  const [userId, setUserIdState] = useState<string | null>(null);
 
-  // Load authentication state and role from localStorage on mount
+  // Load authentication state, role, and userId from localStorage on mount
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (token) {
@@ -32,6 +37,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         if (decodedToken) {
           setIsLoggedInState(true);
           setUserRoleState(decodedToken.role || 'user');
+          setUserIdState(decodedToken.userId || null);
         }
       } catch (error) {
         console.error("Error decoding token:", error);
@@ -44,10 +50,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setIsLoggedInState(value);
     localStorage.setItem("isLoggedIn", value.toString());
     
-    // Clear token and role if logging out
+    // Clear token, role, and userId if logging out
     if (!value) {
       localStorage.removeItem("token");
       setUserRoleState('user');
+      setUserIdState(null);
     }
   };
 
@@ -56,12 +63,19 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setUserRoleState(role);
   };
 
+  // Set user ID
+  const setUserId = (id: string | null) => {
+    setUserIdState(id);
+  };
+
   return (
     <AuthContext.Provider value={{ 
       isLoggedIn, 
       setIsLoggedIn, 
       userRole, 
-      setUserRole 
+      setUserRole,
+      userId,
+      setUserId
     }}>
       {children}
     </AuthContext.Provider>

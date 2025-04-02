@@ -29,27 +29,38 @@ export async function POST(req) {
       return NextResponse.json({ error: "Invalid credentials" }, { status: 401 });
     }
 
-    // Determine user role
-    let role = 'user'; // default role
-    if (user.admin) {
-      role = 'admin';
-    } else if (user.instructors) {
-      role = 'instructor';
-    } else if (user.clients) {
-      role = 'client';
-    }
+      // Determine user role and get the role-specific ID
+      let role = 'user'; // default role
+      let userId = null;
 
-    // Create token with role included
+      if (user.admin) {
+        role = 'admin';
+        userId = user.admin.admin_id;
+      } else if (user.instructors) {
+        role = 'instructor';
+        userId = user.instructors.instructor_id;
+      } else if (user.clients) {
+        role = 'client';
+        userId = user.clients.client_id;
+      }
+
+    // Create token with role and appropriate ID included
     const token = jwt.sign(
       { 
-        userId: user.id, 
-        role: role 
+        userId: user.user_id, // Use the correct field from prisma schema
+        role: role,
+        userId: userId // Include the role-specific ID
       }, 
       JWT_SECRET, 
       { expiresIn: "1h" }
     );
 
-    return NextResponse.json({ token, role }, { status: 200 });
+    return NextResponse.json({ 
+      token, 
+      role, 
+      userId: user.user_id, // Return the user_id from the schema
+      userId  // Return the role-specific ID
+    }, { status: 200 });
 
   } catch (error) {
     console.error("Login error:", error);

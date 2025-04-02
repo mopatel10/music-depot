@@ -1,10 +1,28 @@
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 
-export async function GET() {
+export async function GET(req) {
   try {
+    const instructorId = req.nextUrl.searchParams.get('instructorId');
+    
+    // Set up the where clause for the query
+    let whereClause = {
+      instructor_id: {
+        not: null, // Base condition: ensure client_id is not null
+      }
+    };
+    
+    // If instructorId is provided in the request, add it to the where clause
+    if (instructorId) {
+      whereClause = {
+        ...whereClause,
+        instructor_id: instructorId, // Override with specific client_id
+      };
+    }
+
     // Fetch instructor availability from the database
     const instructorSchedules = await prisma.instructor_availability.findMany({
+      where: whereClause,
       select: {
         date: true,  // Added the date field
         start_time: true,

@@ -20,6 +20,7 @@ function AddSessions() {
   const [rooms, setRooms] = useState([]);
   const [lessons, setLessons] = useState([]);
   const [clients, setClients] = useState([]);
+  const [error, setError]  = useState([null]);
   const [lessonInstructorMap, setLessonInstructorMap] = useState({});
   const router = useRouter();
 
@@ -160,9 +161,17 @@ function AddSessions() {
           end_time: endTime,
           date,
           attendingcapacity: attendingCapacity,
-        }),
+        })
       });
-      if (!response.ok) throw new Error('Failed to add lesson schedule');
+      
+      const data = await response.json();
+      
+      if (!response.ok) {
+        // Display the specific error from the API
+        alert(data.error || 'An error occurred');
+        throw new Error(data.error || 'Failed to add session');
+      }
+      
       alert('Lesson schedule added successfully!');
       setFormData({
         lesson_id: '',
@@ -178,7 +187,6 @@ function AddSessions() {
       router.push("/ViewSessions");
     } catch (error) {
       console.error('Error adding lesson schedule:', error);
-      alert('Failed to add lesson schedule');
     }
   };
 
@@ -191,10 +199,11 @@ function AddSessions() {
             Create New Session
           </h1>
         </div>
-
+  
         {/* Form Container */}
         <div className="p-8">
           <form onSubmit={handleFormSubmit} className="space-y-6">
+            {/* Lesson and Instructor */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {/* Lesson Dropdown */}
               <div className="space-y-2">
@@ -218,7 +227,7 @@ function AddSessions() {
                   )}
                 </select>
               </div>
-
+  
               {/* Instructor Dropdown */}
               <div className="space-y-2">
                 <label className="block text-sm font-medium text-gray-700">Instructor</label>
@@ -248,7 +257,49 @@ function AddSessions() {
                 )}
               </div>
             </div>
-
+  
+            {/* Time and Date */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              {/* Start Time */}
+              <div className="space-y-2">
+                <label className="block text-sm font-medium text-gray-700">Start Time</label>
+                <input
+                  type="datetime-local"
+                  name="start_time"
+                  value={formData.start_time}
+                  onChange={handleInputChange}
+                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-300"
+                  required
+                />
+              </div>
+  
+              {/* End Time */}
+              <div className="space-y-2">
+                <label className="block text-sm font-medium text-gray-700">End Time</label>
+                <input
+                  type="datetime-local"
+                  name="end_time"
+                  value={formData.end_time}
+                  onChange={handleInputChange}
+                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-300"
+                  required
+                />
+              </div>
+  
+              {/* Date */}
+              <div className="space-y-2">
+                <label className="block text-sm font-medium text-gray-700">Date</label>
+                <input
+                  type="date"
+                  name="date"
+                  value={formData.date}
+                  onChange={handleInputChange}
+                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-300"
+                />
+              </div>
+            </div>
+  
+            {/* Room and Client */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {/* Room Dropdown */}
               <div className="space-y-2">
@@ -272,7 +323,7 @@ function AddSessions() {
                   )}
                 </select>
               </div>
-
+  
               {/* Client Dropdown */}
               <div className="space-y-2">
                 <label className="block text-sm font-medium text-gray-700">Client</label>
@@ -296,35 +347,8 @@ function AddSessions() {
                 </select>
               </div>
             </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {/* Start Time */}
-              <div className="space-y-2">
-                <label className="block text-sm font-medium text-gray-700">Start Time</label>
-                <input
-                  type="datetime-local"
-                  name="start_time"
-                  value={formData.start_time}
-                  onChange={handleInputChange}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-300"
-                  required
-                />
-              </div>
-
-              {/* End Time */}
-              <div className="space-y-2">
-                <label className="block text-sm font-medium text-gray-700">End Time</label>
-                <input
-                  type="datetime-local"
-                  name="end_time"
-                  value={formData.end_time}
-                  onChange={handleInputChange}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-300"
-                  required
-                />
-              </div>
-            </div>
-
+  
+            {/* Capacity and Cancelled */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {/* Attending Capacity */}
               <div className="space-y-2">
@@ -338,21 +362,7 @@ function AddSessions() {
                   required
                 />
               </div>
-
-              {/* Date */}
-              <div className="space-y-2">
-                <label className="block text-sm font-medium text-gray-700">Date</label>
-                <input
-                  type="date"
-                  name="date"
-                  value={formData.date}
-                  onChange={handleInputChange}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-300"
-                />
-              </div>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+  
               {/* Cancelled Checkbox */}
               <div className="flex items-center space-x-3 pt-6">
                 <input
@@ -365,7 +375,8 @@ function AddSessions() {
                 <label className="text-sm text-gray-700">Cancelled</label>
               </div>
             </div>
-
+  
+  
             {/* Submit Button */}
             <button 
               type="submit" 
