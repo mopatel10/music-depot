@@ -23,11 +23,15 @@ export async function GET(request) {
       parsedDate = new Date(date);
       // Ensure it's just the date portion
       parsedDate = new Date(parsedDate.toISOString().split('T')[0]);
-      console.log(parsedDate);
     }
 
     if (isNaN(parsedStartTime.getTime()) || isNaN(parsedEndTime.getTime())) {
       return NextResponse.json({ error: "Invalid start or end time" }, { status: 400 });
+    }
+
+    // Validate that end time is after start time
+    if (parsedEndTime <= parsedStartTime) {
+      return NextResponse.json({ error: "End time must be after start time" }, { status: 400 });
     }
 
     // Check if the instructor has any session scheduled during this time
@@ -58,6 +62,13 @@ export async function GET(request) {
                   { start_time: { gte: parsedStartTime } },
                   { end_time: { lte: parsedEndTime } }
                 ]
+              },
+              {
+                // Existing booking completely contains new booking
+                AND: [
+                  { start_time: { lte: parsedStartTime } },
+                  { end_time: { gte: parsedEndTime } }
+                ]
               }
             ]
           }
@@ -83,21 +94,24 @@ export async function GET(request) {
       }, { status: 200 });
     }
 
+    // Extract just the time portion for comparison with TIME fields in the database
+    const startTimeOnly = new Date(parsedStartTime);
+    const endTimeOnly = new Date(parsedEndTime);
+    
     // Check if instructor has availability for this date and time in instructor_availability table
     let instructorHasAvailability = true;
     
     if (parsedDate) {
-      // This check would depend on how your availability table is structured
-      // Here's a simple example that checks if there's an availability record for this day
+      // Look for an availability record that covers the requested time slot
       const instructorAvailability = await prisma.instructor_availability.findFirst({
         where: {
           instructor_id: instructorId,
           date: parsedDate,
           start_time: {
-            lte: parsedStartTime
+            lte: startTimeOnly
           },
           end_time: {
-            gte: parsedEndTime
+            gte: endTimeOnly
           }
         }
       });
