@@ -3,6 +3,7 @@ import React, { useEffect, useState } from "react";
 import { Calendar, dateFnsLocalizer, Event } from "react-big-calendar";
 import { format, parse, startOfWeek, getDay } from "date-fns";
 import "react-big-calendar/lib/css/react-big-calendar.css";
+import { useAuth } from "../context/AuthContext"; 
 
 // Configure date-fns localizer
 const locales = {
@@ -29,6 +30,7 @@ interface InstructorSchedule {
 const CalendarPage: React.FC = () => {
   const [events, setEvents] = useState<Event[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const { userId, userRole } = useAuth(); // Get userId and userRole from AuthContext
 
   // Function to convert 'HH:mm' to a Date object
   const convertToDate = (dateString: string, timeString: string): Date => {
@@ -43,7 +45,14 @@ const CalendarPage: React.FC = () => {
     const fetchSchedule = async () => {
       try {
         setIsLoading(true);
-        const response = await fetch("/api/getInstSchedules");
+
+        const isAdmin = userRole === 'admin';
+        const url = isAdmin 
+          ? '/api/getInstSchedules' // Admin sees all schedules
+          : `/api/getInstSchedules${userId ? `?instructorId=${userId}` : ''}`;
+
+        const response = await fetch(url);
+
         if (!response.ok) {
           throw new Error("Failed to fetch schedules");
         }

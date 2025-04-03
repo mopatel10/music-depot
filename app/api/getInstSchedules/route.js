@@ -1,12 +1,24 @@
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 
-export async function GET() {
+export async function GET(req) {
   try {
+    const instructorId = req.nextUrl.searchParams.get('instructorId');
+    
+    // Set up the where clause for the query
+    let whereClause = {};
+    
+    // If instructorId is provided in the request, filter by that specific ID
+    if (instructorId) {
+      whereClause.instructor_id = instructorId;
+    }
+
     // Fetch instructor availability from the database
     const instructorSchedules = await prisma.instructor_availability.findMany({
+      where: whereClause,
       select: {
-        date: true,  // Added the date field
+        availability_id: true,
+        date: true,
         start_time: true,
         end_time: true,
         instructors: {
@@ -38,15 +50,20 @@ export async function GET() {
       const formattedEndTime = `${end_time.getHours().toString().padStart(2, '0')}:${end_time.getMinutes().toString().padStart(2, '0')}`;
 
       return {
-        date: formattedDate,  // Return the formatted date
+        availability_id: schedule.availability_id,
+        date: formattedDate,
         start_time: formattedStartTime,
         end_time: formattedEndTime,
         instructor_id: schedule.instructors.instructor_id,
         instructor_fn: schedule.instructors.users.first_name,
+<<<<<<< HEAD
         instructor_ln: schedule.instructors.users.last_name, 
+=======
+        instructor_ln: schedule.instructors.users.last_name,
+>>>>>>> e3056e23d501439fe4f191a01f575f82f5e589b7
       };
     });
-    console.log(schedules);
+
     return NextResponse.json(schedules);
   } catch (error) {
     console.error("Error fetching instructor schedules:", error);

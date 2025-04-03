@@ -56,33 +56,33 @@ export default function AddLessons() {
     }
   };
 
-  const fetchInstructorsForLevel = async (levelId) => {
-    try {
-      const response = await fetch(`/api/getInstructorsForLevel?levelId=${levelId}`);
-      if (!response.ok) throw new Error('Failed to fetch instructors for level');
-      const result = await response.json();
-      setFilteredInstructors(result);
-      
-      // If the currently selected instructor is not in the filtered list, clear the selection
-      if (formData.instructor_id && !result.some(instructor => instructor.instructor_id === formData.instructor_id)) {
-        setFormData(prev => ({ ...prev, instructor_id: '' }));
-      }
-    } catch (error) {
-      console.error('Error fetching instructors for level:', error);
-      setFilteredInstructors([]);
-    }
-  };
+
 
   const handleInputChange = async (e) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
-
-    // When level is selected, filter instructors who can teach that level or higher
-    if (name === 'level_id' && value) {
-      await fetchInstructorsForLevel(value);
+    
+    // Update form data with the new value
+    setFormData(prev => ({ ...prev, [name]: value }));
+    
+    // Determine which filters to apply based on the field that changed
+    if (['level_id', 'instrument_id', 'start_date'].includes(name)) {
+      // Build the new form data with the latest change
+      const updatedFormData = { ...formData, [name]: value };
+      
+      // Apply filters based on all three criteria
+      if (updatedFormData.level_id || updatedFormData.instrument_id || updatedFormData.start_date) {
+        await fetchFilteredInstructors(
+          updatedFormData.level_id,
+          updatedFormData.instrument_id,
+          updatedFormData.start_date
+        );
+      } else {
+        // If all filters are cleared, show all instructors
+        setFilteredInstructors(allInstructors);
+      }
     }
-
-    // When an instrument is selected, use its name as the lesson name
+    
+    // Auto-populate lesson name when instrument is selected
     if (name === 'instrument_id' && value) {
       const selectedInstrument = instruments.find(inst => inst.instrument_id.toString() === value);
       if (selectedInstrument) {
@@ -93,6 +93,31 @@ export default function AddLessons() {
       }
     }
   };
+
+const fetchFilteredInstructors = async (levelId, instrumentId, date) => {
+  try {
+    // Build query parameters
+    let queryParams = [];
+    if (levelId) queryParams.push(`levelId=${levelId}`);
+    if (instrumentId) queryParams.push(`instrumentId=${instrumentId}`);
+    
+    const queryString = queryParams.length > 0 ? `?${queryParams.join('&')}` : '';
+    
+    const response = await fetch(`/api/getFilteredInstructors${queryString}`);
+    if (!response.ok) throw new Error('Failed to fetch filtered instructors');
+    
+    const result = await response.json();
+    setFilteredInstructors(result);
+    
+    // If the currently selected instructor is not in the filtered list, clear the selection
+    if (formData.instructor_id && !result.some(instructor => instructor.instructor_id === formData.instructor_id)) {
+      setFormData(prev => ({ ...prev, instructor_id: '' }));
+    }
+  } catch (error) {
+    console.error('Error fetching filtered instructors:', error);
+    setFilteredInstructors([]);
+  }
+};
 
   const handleFormSubmit = async (e) => {
     e.preventDefault();
@@ -156,7 +181,20 @@ export default function AddLessons() {
   useEffect(() => {
     fetchInstructors();
     fetchInstruments();
-    fetchAllLevels(); // Fetch all levels at component load
+    fetchAllLevels();
+    
+    // Clear the form data when the component mounts
+    setFormData({
+      lesson_name: '',
+      instrument_id: '',
+      level_id: '',
+      status: '',
+      cost: '',
+      total_lessons: '',
+      capacity: '',
+      start_date: '',
+      instructor_id: '',
+    });
   }, []);
 
   return (
@@ -206,7 +244,7 @@ export default function AddLessons() {
                   readOnly
                 />
               </div>
-
+             
               <div>
                 <label className="block text-sm font-medium text-gray-700">Level</label>
                 <select
@@ -300,7 +338,6 @@ export default function AddLessons() {
                   required
                 />
               </div>
-
               <div>
                 <label className="block text-sm font-medium text-gray-700">Start Date</label>
                 <input
@@ -312,6 +349,7 @@ export default function AddLessons() {
                   required
                 />
               </div>
+             
             </div>
 
             <button 
