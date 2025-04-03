@@ -23,6 +23,7 @@ export async function GET(request) {
       parsedDate = new Date(date);
       // Ensure it's just the date portion
       parsedDate = new Date(parsedDate.toISOString().split('T')[0]);
+      console.log(parsedDate);
     }
 
     if (isNaN(parsedStartTime.getTime()) || isNaN(parsedEndTime.getTime())) {

@@ -197,10 +197,6 @@ function AddSessions() {
       const adjustedDate = new Date(localDate.getTime() - localDate.getTimezoneOffset() * 60000).toISOString();
       date = adjustedDate;
     }
-<<<<<<< HEAD
-
-=======
->>>>>>> e3056e23d501439fe4f191a01f575f82f5e589b7
   
     try {
       const response = await fetch('/api/addSession', {
