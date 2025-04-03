@@ -63,7 +63,7 @@ export default function CalendarGfg({ view }) {
       });
 
       if (response.ok) {
-        // Remove the deleted lesson from the UI state
+
         setData((prevData) => prevData.filter((lesson) => lesson.lesson_id !== lessonId));
         alert('Lesson deleted successfully!');
         fetchData();
@@ -112,7 +112,7 @@ export default function CalendarGfg({ view }) {
   
       alert('Session successfully cancelled!');
       fetchSessions();
-      // Refresh sessions or update local state here if needed
+  
     } catch (error) {
       console.error('Error cancelling session:', error);
       alert('Error cancelling session. Please try again.');
@@ -162,17 +162,16 @@ export default function CalendarGfg({ view }) {
   const handleFormSubmit = async (e) => {
     e.preventDefault();
 
-    // Validate required fields
+    // Validation for required fields
     if (!formData.lesson_name || !formData.level_id || !formData.status) {
       return alert('Please fill all required fields.');
     }
 
-    // Convert to appropriate data types
     const capacity = parseInt(formData.capacity, 10);
     const cost = parseFloat(formData.cost);
     const totalLessons = parseInt(formData.total_lessons, 10);
 
-    // Validate capacity
+    // Validation for capacity
     if (capacity > 10) {
       return alert('Capacity cannot be greater than 10.');
     }
@@ -294,8 +293,7 @@ return (
           <div className="p-8">
             <form onSubmit={handleFormSubmit} className="space-y-6">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {/* Input fields with enhanced styling */}
-                {/* (Keep existing input structure, just update classes) */}
+              
                 <div className="space-y-2">
                   <label className="block text-sm font-medium text-gray-700">Lesson Name</label>
                   <input
@@ -420,7 +418,7 @@ return (
         </div>
       )}
 
-        {/* View Lessons View */}
+        {/* View Lessons */}
         {view === 'ViewLessons' && (
           <div className="p-6">
             {data && data.length > 0 ? (

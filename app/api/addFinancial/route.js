@@ -10,7 +10,7 @@ export async function POST(req) {
     paid 
   } = await req.json();
 
-  // Validate all required fields
+  // Validation for required fields
   if (!client_id || !lesson_id || !amount_paid || !payment_method) {
     return NextResponse.json({ error: 'All fields are required' }, { status: 400 });
   }
@@ -35,7 +35,7 @@ export async function POST(req) {
   } catch (error) {
     console.error(error);
 
-    // Handle potential unique constraint violations or other database errors
+    // Handle violations or other database errors
     if (error instanceof Error && error.message.includes('Unique constraint')) {
       return NextResponse.json({ 
         error: 'This registration may already exist' 

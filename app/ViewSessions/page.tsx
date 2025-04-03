@@ -94,8 +94,7 @@ export default function ViewSessions() {
                   <h3 className="text-xl font-bold text-blue-900 mb-2">{session.lessons.lesson_name}</h3>
                   <div className="space-y-1 text-gray-600">
                     <p><strong>Instructor:</strong> {session.instructors?.users?.first_name} {session.instructors?.users?.last_name}</p>
-                    <p><strong>Client:</strong> {session.clients?.users?.first_name} {session.clients?.users?.last_name}</p>
-                    {/* <p><strong>Level:</strong> {session.lessons?.lesson_levels?.level_name}</p> */}
+                    <p><strong>Client:</strong> {session.clients?.users?.first_name} {session.clients?.users?.last_name}</p>                    
                     <p><strong>Date:</strong> {new Date(session.date).toLocaleDateString()}</p>
                     <p><strong>Time:</strong> {new Date(session.start_time).toLocaleTimeString()} - {new Date(session.end_time).toLocaleTimeString()}</p>
                     <p><strong>Room:</strong> {session.rooms?.room_type}</p>

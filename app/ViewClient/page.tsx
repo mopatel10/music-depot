@@ -33,8 +33,8 @@ const CalendarPage: React.FC = () => {
   // Function to convert 'HH:mm' to a Date object
   const convertToDate = (dateString: string, timeString: string): Date => {
     const [hours, minutes] = timeString.split(":").map(Number);
-    const date = new Date(`${dateString}T00:00:00Z`); // Ensure the date is in UTC
-    date.setHours(hours, minutes); // Set the correct hours and minutes
+    const date = new Date(`${dateString}T00:00:00Z`); 
+    date.setHours(hours, minutes);
     return date;
   };
 
@@ -49,7 +49,7 @@ const CalendarPage: React.FC = () => {
         }
         const data: ClientSchedule[] = await response.json();
 
-        // Map API response to Big Calendar events
+        // Map API response to Calendar events
         const mappedEvents = data.map((schedule) => {
           const { date, start, end, client_first_name, client_last_name, lesson_name } = schedule;
 

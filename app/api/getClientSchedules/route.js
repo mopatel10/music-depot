@@ -4,11 +4,11 @@ import { zonedTimeToUtc, utcToZonedTime } from 'date-fns-tz';
 
 export async function GET() {
   try {
-    // Fetch all lesson schedules for all clients, including client first and last names
+    // Fetch all lesson 
     const schedules = await prisma.lesson_schedule.findMany({
       where: {
         client_id: {
-          not: null, // Ensure client_id is not null
+          not: null, 
         },
       },
       select: {
@@ -16,7 +16,7 @@ export async function GET() {
         start_time: true,
         end_time: true,
         date: true,
-        clients: { // Include client information
+        clients: { 
           select: {
             users: {
               select: {
@@ -36,12 +36,12 @@ export async function GET() {
 
 
    
-    // Format schedules for Big Calendar
+    // Format schedules for Calendar
     const formattedSchedules = schedules.map(schedule => {
         const start_time = new Date(schedule.start_time);
         const end_time = new Date(schedule.end_time);
 
-        // Convert times to 'HH:mm' format
+        // Convert times 
         const formattedStartTime = `${start_time.getHours().toString().padStart(2, '0')}:${start_time.getMinutes().toString().padStart(2, '0')}`;
         const formattedEndTime = `${end_time.getHours().toString().padStart(2, '0')}:${end_time.getMinutes().toString().padStart(2, '0')}`;
         const formattedDate = schedule.date? new Date(schedule.date).toISOString().split("T")[0] : null;
@@ -52,13 +52,13 @@ export async function GET() {
         
         return {
           client_id: schedule.client_id,
-          start: formattedStartTime, // Return as Date object
-          end: formattedEndTime,     // Return as Date object
-          title: `Lesson for ${clientFirstName} ${clientLastName}`, // Add client name
-          date: formattedDate,      // Just the date part for events that span a full day
-          client_first_name: clientFirstName, // Store the client's first name
+          start: formattedStartTime, 
+          end: formattedEndTime,     
+          title: `Lesson for ${clientFirstName} ${clientLastName}`, 
+          date: formattedDate,     
+          client_first_name: clientFirstName, // Storing the client's first name
           client_last_name: clientLastName, 
-          lesson_name: lessonName,  // Store the client's last name
+          lesson_name: lessonName,  // Storing the client's last name
         };
       });
       

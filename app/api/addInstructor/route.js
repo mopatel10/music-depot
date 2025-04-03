@@ -14,12 +14,12 @@ export async function POST(req) {
     levelId
   } = await req.json();
 
-  // Validate all required fields
+  // Validation for required fields
   if (!firstName || !lastName || !email || !phoneNumber || !password || !employmentType) {
     return NextResponse.json({ error: 'All fields are required' }, { status: 400 });
   }
 
-  // Validate instructor specialty fields if they're needed
+  // Validate instructor specialty fields 
   if (!instrumentId || !levelId) {
     return NextResponse.json({ error: 'Instrument and level are required for instructors' }, { status: 400 });
   }
@@ -29,7 +29,7 @@ export async function POST(req) {
     const saltRounds = 10;
     const hashedPassword = await bcrypt.hash(password, saltRounds);
 
-    // Use transaction to ensure all operations succeed or fail together
+    
     const result = await prisma.$transaction(async (prisma) => {
       // Create a user
       const user = await prisma.users.create({
@@ -70,7 +70,7 @@ export async function POST(req) {
   } catch (error) {
     console.error(error);
 
-    // Handle unique constraint violation for email
+    // Handle validation for email 
     if (error.code === 'P2002') {
       return NextResponse.json({ 
         error: 'An account with this email already exists' 

@@ -3,8 +3,8 @@ import prisma from "@/lib/prisma";
 
 export async function DELETE(req) {
   try {
-    // Extract session ID from the request URL
-    const { id } = await req.json(); // Use req.json() to parse the body
+    
+    const { id } = await req.json(); 
 
     if (!id) {
       return new Response(JSON.stringify({ message: "Session ID is required" }), { status: 400 });
@@ -13,7 +13,7 @@ export async function DELETE(req) {
     // Delete the session from the lesson_schedule table
     const deletedSession = await prisma.lesson_schedule.delete({
       where: {
-        session_id: id, // Ensure it's using 'session_id'
+        session_id: id, 
       },
     });
 

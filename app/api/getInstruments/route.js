@@ -3,7 +3,7 @@ import prisma from "@/lib/prisma";
 
 export async function GET() {
     try {
-      // Fetch financial data with joined information
+     
       const instruments = await prisma.instruments.findMany({
         select: {
           instrument_id: true,

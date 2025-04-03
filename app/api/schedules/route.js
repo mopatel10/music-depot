@@ -24,11 +24,11 @@ export async function GET(req) {
             include: {
               instructors: {
                 include: {
-                  users: true, // Include user details for the instructor
+                  users: true, 
                 },
               },
-              lesson_levels: true, // Include lesson levels
-              lesson_schedule: true, // Include lesson schedules
+              lesson_levels: true, 
+              lesson_schedule: true, 
             },
           });
         } else {
@@ -37,11 +37,11 @@ export async function GET(req) {
             include: {
               instructors: {
                 include: {
-                  users: true, // Include user details for the instructor
+                  users: true, 
                 },
               },
-              lesson_levels: true, // Include lesson levels
-              lesson_schedule: true, // Include lesson schedules
+              lesson_levels: true, 
+              lesson_schedule: true, 
             },
           });
         }

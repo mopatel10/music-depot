@@ -3,7 +3,7 @@ import prisma from "@/lib/prisma";
 
 export async function GET() {
   try {
-    // Fetch scheduled sessions along with related data (instructors, lessons, rooms)
+    // Fetch scheduled sessions  (instructors, lessons, rooms)
     const sessions = await prisma.lesson_schedule.findMany({
       select: {
         session_id: true,

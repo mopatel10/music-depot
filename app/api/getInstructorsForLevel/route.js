@@ -9,7 +9,7 @@ export async function GET(request) {
       return NextResponse.json({ error: "Level ID is required" }, { status: 400 });
     }
 
-    // Find instructors who can teach this level (have this level in their specialties)
+    // Find instructors(based on level and specialties)
     const instructors = await prisma.instructors.findMany({
       where: {
         instructor_specialty: {
@@ -33,7 +33,7 @@ export async function GET(request) {
       }
     });
 
-    // Format the instructor data to match the expected structure
+    // Format the instructor data information
     const formattedInstructors = instructors.map(instructor => ({
       instructor_id: instructor.instructor_id,
       first_name: instructor.users.first_name,

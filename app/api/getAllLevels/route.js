@@ -3,7 +3,7 @@ import prisma from "@/lib/prisma";
 
 export async function GET() {
   try {
-    // Fetch all lesson levels
+    // Fetch lesson levels
     const levels = await prisma.lesson_levels.findMany({
       select: {
         level_id: true,

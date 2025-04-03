@@ -147,8 +147,6 @@ function AddSessions() {
       date = adjustedDate;
     }
 
-    //const date = formData.date ? new Date(formData.date + "T00:00:00Z").toISOString() : null;
-    //const date = formData.date ? new Date(formData.date).toISOString().split('T')[0] : null;
   
     try {
       const response = await fetch('/api/addSession', {

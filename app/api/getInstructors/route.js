@@ -3,7 +3,7 @@ import prisma from "@/lib/prisma";
 
 export async function GET() {
   try {
-    // Fetch instructors and their users' first and last name
+    // Fetch instructors (users' first and last name)
     const instructors = await prisma.instructors.findMany({
       include: {
         users: {
@@ -15,7 +15,7 @@ export async function GET() {
       },
     });
 
-    // Transform and return only the instructor's ID, first name, and last name
+    // return instructor's ID (first name, and last name)
     const formattedData = instructors.map((instructor) => ({
       instructor_id: instructor.instructor_id,
       first_name: instructor.users.first_name,

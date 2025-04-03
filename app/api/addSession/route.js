@@ -27,7 +27,7 @@ export async function POST(req) {
       }
     }
 
-    // Check if client_id is provided (since it's optional)
+  
     if (body.client_id) {
       // Check if the client is already booked at this time
       const existingClientBooking = await prisma.lesson_schedule.findFirst({

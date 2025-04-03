@@ -82,7 +82,7 @@ const Register = () => {
       const result = await response.json();
       alert('Instructor registered successfully!');
       
-      // If we have an instructor ID, fetch the levels
+      
       if (result && result.instructor_id) {
         fetchLevels(result.instructor_id);
       }

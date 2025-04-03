@@ -1,4 +1,4 @@
-// /app/api/UpdateSession/route.js
+
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 

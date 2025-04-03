@@ -41,7 +41,7 @@ export async function PUT(req) {
       }
     });
 
-    // Update instructor if applicable
+    // Update instructor when applicable
     if (currentUser.instructors && employment_type) {
       await prisma.instructors.update({
         where: { user_id: user_id },
@@ -58,7 +58,7 @@ export async function PUT(req) {
   } catch (error) {
     console.error('Error updating user profile:', error);
     
-    // Handle unique constraint violation for email
+    // validation for email
     if (error.code === 'P2002') {
       return NextResponse.json({ 
         error: 'An account with this email already exists' 

@@ -24,7 +24,7 @@ export async function GET(req) {
         }, { status: 404 });
       }
 
-      // Determine role and additional details
+      // Determine role and details
       let role = 'Unknown';
       let additionalInfo = {};
 

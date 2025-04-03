@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '../context/AuthContext';
 
-// Define interfaces for dynamic data
+// Interfaces for dynamic data
 interface Client {
   client_id: string;
   first_name: string;
@@ -17,7 +17,7 @@ interface Lesson {
   instructor_name: string;
 }
 
-// Define the shape of the financial entry
+// The shape of the financial entry
 interface FinancialEntry {
   client_id: string;
   lesson_id: string;

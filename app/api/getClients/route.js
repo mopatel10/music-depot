@@ -3,7 +3,7 @@ import prisma from "@/lib/prisma";
 
 export async function GET() {
   try {
-    // Fetch client and their users' first and last name
+   
     const client = await prisma.clients.findMany({
       include: {
         users: {
@@ -15,7 +15,6 @@ export async function GET() {
       },
     });
 
-    // Transform and return only the client's ID, first name, and last name
     const formattedData = client.map((client) => ({
       client_id: client.client_id,
       first_name: client.users.first_name,

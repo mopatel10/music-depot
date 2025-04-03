@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 
 export async function GET(req) {
-  // Extract query parameters from the request URL.
+  
   const { searchParams } = new URL(req.url);
   const dateParam = searchParams.get("date");
   const startTimeParam = searchParams.get("start_time");
@@ -15,17 +15,17 @@ export async function GET(req) {
     );
   }
 
-  // Convert date to an ISO string.
+  // Convert date
   const isoDate = new Date(dateParam + "T00:00:00.000Z").toISOString();
 
   // Convert the time parameters to Date objects.
   const startTime = new Date(startTimeParam);
   const endTime = new Date(endTimeParam);
 
-  // Fetch sessions that conflict with the provided date and time.
+ 
   const conflictingSessions = await prisma.lesson_schedule.findMany({
     where: {
-      date: isoDate, // Use the full ISO date
+      date: isoDate,
       AND: [
         {
           OR: [
@@ -55,10 +55,10 @@ export async function GET(req) {
     select: { room_id: true }
   });
 
-  // Extract the IDs of the booked rooms.
+  
   const bookedRoomIds = conflictingSessions.map((session) => session.room_id);
 
-  // Fetch rooms that are not booked during the specified time.
+  
   const availableRooms = await prisma.rooms.findMany({
     where: {
       room_id: { notIn: bookedRoomIds }

@@ -43,7 +43,7 @@ export async function GET() {
         end_time: formattedEndTime,
         instructor_id: schedule.instructors.instructor_id,
         instructor_fn: schedule.instructors.users.first_name,
-        instructor_ln: schedule.instructors.users.last_name, // Assuming only one user per instructor
+        instructor_ln: schedule.instructors.users.last_name, 
       };
     });
     console.log(schedules);

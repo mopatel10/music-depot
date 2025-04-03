@@ -22,11 +22,11 @@ export async function GET() {
       },
     });
 
-// Transform and return lesson data with instructor name AND instructor_id
+
 const formattedData = lessons.map((lesson) => ({
   lesson_id: lesson.lesson_id,
   lesson_name: lesson.lesson_name,
-  instructor_id: lesson.instructor_id, // Include this
+  instructor_id: lesson.instructor_id, 
   instructor_name: `${lesson.instructors.users.first_name} ${lesson.instructors.users.last_name}`,
 }));
 

@@ -3,7 +3,7 @@ import prisma from "@/lib/prisma";
 
 export async function GET() {
   try {
-    // Fetch rooms from the database
+    
     const rooms = await prisma.rooms.findMany({
       select: {
         room_id: true,

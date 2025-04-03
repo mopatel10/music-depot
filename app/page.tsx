@@ -18,7 +18,7 @@ const LoginPage: React.FC = () => {
   const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setLoading(true);
-    setError(""); // Clear previous errors before a new attempt
+    setError("");
   
     try {
       const res = await axios.post("/api/authUser", { email, password });

@@ -21,7 +21,7 @@ export async function POST(req) {
       throw new Error("Invalid start or end time");
     }
 
-    // Validate date format (optional)
+    // Validate date format 
     let date = null;
     if (body.date) {
       date = new Date(body.date);

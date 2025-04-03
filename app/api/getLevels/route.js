@@ -11,7 +11,7 @@ export async function GET(request) {
 
     // Fetch lesson levels for a specific instructor
     const instructor = await prisma.instructors.findUnique({
-      where: { instructor_id: instructorId }, // Use instructorId as String (UUID)
+      where: { instructor_id: instructorId }, // Use instructorId as String 
       include: {
         instructor_specialty: {
           include: {

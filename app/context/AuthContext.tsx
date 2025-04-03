@@ -2,7 +2,7 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
 import jwt from 'jsonwebtoken';
 
-// Define the shape of the authentication context
+
 interface AuthContextType {
   isLoggedIn: boolean;
   setIsLoggedIn: (value: boolean) => void;
@@ -39,7 +39,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   }, []);
 
-  // Update localStorage whenever authentication state changes
+
   const setIsLoggedIn = (value: boolean) => {
     setIsLoggedInState(value);
     localStorage.setItem("isLoggedIn", value.toString());
@@ -68,5 +68,4 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   );
 };
 
-// Custom hook to use authentication context
 export const useAuth = () => useContext(AuthContext);
