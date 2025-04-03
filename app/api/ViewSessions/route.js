@@ -3,9 +3,6 @@ import prisma from "@/lib/prisma";
 
 export async function GET(req) {
   try {
-<<<<<<< HEAD
-    // Fetch scheduled sessions  (instructors, lessons, rooms)
-=======
     const clientId = req.nextUrl.searchParams.get('id');
     
     // Set up the where clause for the query
@@ -24,7 +21,6 @@ export async function GET(req) {
     }
     
     // Fetch scheduled sessions along with related data (instructors, lessons, rooms)
->>>>>>> e3056e23d501439fe4f191a01f575f82f5e589b7
     const sessions = await prisma.lesson_schedule.findMany({
       where: whereClause,
       select: {

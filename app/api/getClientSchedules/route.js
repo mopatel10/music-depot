@@ -3,15 +3,6 @@ import prisma from "@/lib/prisma";
 
 export async function GET(req) {
   try {
-<<<<<<< HEAD
-    // Fetch all lesson 
-    const schedules = await prisma.lesson_schedule.findMany({
-      where: {
-        client_id: {
-          not: null, 
-        },
-      },
-=======
     const clientId = req.nextUrl.searchParams.get('clientId');
     
     // Set up the where clause for the query
@@ -32,7 +23,6 @@ export async function GET(req) {
     // Fetch lesson schedules based on the where clause
     const schedules = await prisma.lesson_schedule.findMany({
       where: whereClause,
->>>>>>> e3056e23d501439fe4f191a01f575f82f5e589b7
       select: {
         client_id: true,
         start_time: true,
@@ -56,45 +46,15 @@ export async function GET(req) {
       },
     });
 
-<<<<<<< HEAD
-
-
-   
-    // Format schedules for Calendar
-=======
     // Format schedules for Big Calendar
->>>>>>> e3056e23d501439fe4f191a01f575f82f5e589b7
     const formattedSchedules = schedules.map(schedule => {
       const start_time = new Date(schedule.start_time);
       const end_time = new Date(schedule.end_time);
 
-<<<<<<< HEAD
-        // Convert times 
-        const formattedStartTime = `${start_time.getHours().toString().padStart(2, '0')}:${start_time.getMinutes().toString().padStart(2, '0')}`;
-        const formattedEndTime = `${end_time.getHours().toString().padStart(2, '0')}:${end_time.getMinutes().toString().padStart(2, '0')}`;
-        const formattedDate = schedule.date? new Date(schedule.date).toISOString().split("T")[0] : null;
-        
-        const clientFirstName = schedule.clients?.users?.first_name;
-        const clientLastName = schedule.clients?.users?.last_name;
-        const lessonName = schedule.lessons.lesson_name;
-        
-        return {
-          client_id: schedule.client_id,
-          start: formattedStartTime, 
-          end: formattedEndTime,     
-          title: `Lesson for ${clientFirstName} ${clientLastName}`, 
-          date: formattedDate,     
-          client_first_name: clientFirstName, // Storing the client's first name
-          client_last_name: clientLastName, 
-          lesson_name: lessonName,  // Storing the client's last name
-        };
-      });
-=======
       // Convert times to 'HH:mm' format
       const formattedStartTime = `${start_time.getHours().toString().padStart(2, '0')}:${start_time.getMinutes().toString().padStart(2, '0')}`;
       const formattedEndTime = `${end_time.getHours().toString().padStart(2, '0')}:${end_time.getMinutes().toString().padStart(2, '0')}`;
       const formattedDate = schedule.date ? new Date(schedule.date).toISOString().split("T")[0] : null;
->>>>>>> e3056e23d501439fe4f191a01f575f82f5e589b7
       
       const clientFirstName = schedule.clients?.users?.first_name;
       const clientLastName = schedule.clients?.users?.last_name;

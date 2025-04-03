@@ -56,11 +56,7 @@ export async function GET(req) {
         end_time: formattedEndTime,
         instructor_id: schedule.instructors.instructor_id,
         instructor_fn: schedule.instructors.users.first_name,
-<<<<<<< HEAD
-        instructor_ln: schedule.instructors.users.last_name, 
-=======
         instructor_ln: schedule.instructors.users.last_name,
->>>>>>> e3056e23d501439fe4f191a01f575f82f5e589b7
       };
     });
 
