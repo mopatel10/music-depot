@@ -1,44 +1,81 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { Trash2 } from "lucide-react";
+import { Trash2 } from 'lucide-react';
 
 export default function ViewLessons() {
-  const [data, setData] = useState(null);
+  const [data, setData] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  const fetchData = async () => {
-    try {
-      const response = await fetch('/api/schedules?view=ViewLessons');
-      if (!response.ok) throw new Error('Failed to fetch data');
-      const result = await response.json();
-      setData(result);
-    } catch (error) {
-      console.error('Error fetching data:', error);
-      setData(null);
-    }
-  };
+  // Hardcoded lesson data
+  const mockLessons = [
+    {
+      lesson_id: 1,
+      lesson_name: 'Beginner Piano',
+      instructors: {
+        users: {
+          first_name: 'Alice',
+          last_name: 'Smith',
+        },
+      },
+      lesson_levels: {
+        level_name: 'Beginner',
+      },
+      status: 'Active',
+      cost: 150,
+      start_date: '2025-04-15T00:00:00Z',
+      capacity: 10,
+    },
+    {
+      lesson_id: 2,
+      lesson_name: 'Intermediate Guitar',
+      instructors: {
+        users: {
+          first_name: 'John',
+          last_name: 'Doe',
+        },
+      },
+      lesson_levels: {
+        level_name: 'Intermediate',
+      },
+      status: 'Scheduled',
+      cost: 180,
+      start_date: '2025-05-01T00:00:00Z',
+      capacity: 8,
+    },
+    {
+      lesson_id: 3,
+      lesson_name: 'Advanced Drums',
+      instructors: {
+        users: {
+          first_name: 'Maria',
+          last_name: 'Lopez',
+        },
+      },
+      lesson_levels: {
+        level_name: 'Advanced',
+      },
+      status: 'Cancelled',
+      cost: 200,
+      start_date: '2025-06-01T00:00:00Z',
+      capacity: 6,
+    },
+  ];
 
-  const handleDeleteLesson = async (lessonId) => {
-    try {
-      const response = await fetch(`/api/deleteLesson/${lessonId}`, {
-        method: 'DELETE',
-      });
+  const handleDeleteLesson = (lessonId) => {
+    const confirmDelete = confirm('Are you sure you want to delete this lesson?');
+    if (!confirmDelete) return;
 
-      if (response.ok) {
-        setData((prevData) => prevData.filter((lesson) => lesson.lesson_id !== lessonId));
-        alert('Lesson deleted successfully!');
-        fetchData();
-      } else {
-        alert('Failed to delete lesson');
-      }
-    } catch (error) {
-      console.error('Error deleting lesson:', error);
-      alert('An error occurred while deleting the lesson');
-    }
+    setData((prevData) => prevData.filter((lesson) => lesson.lesson_id !== lessonId));
+    alert('Lesson deleted successfully!');
   };
 
   useEffect(() => {
-    fetchData();
+    setLoading(true);
+    setTimeout(() => {
+      setData(mockLessons);
+      setLoading(false);
+    }, 500); // Simulate loading delay
   }, []);
 
   return (
@@ -51,16 +88,18 @@ export default function ViewLessons() {
         </div>
 
         <div className="p-6">
-          {data && data.length > 0 ? (
+          {loading ? (
+            <div className="text-center text-gray-600 text-xl py-12">Loading lessons...</div>
+          ) : data.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {data.map((lesson, index) => (
-                <div 
-                  key={index} 
+                <div
+                  key={index}
                   className="bg-white border border-gray-100 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 p-6 space-y-3 relative group"
                 >
                   <div className="absolute top-4 right-4 flex space-x-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                    <button 
-                      onClick={() => handleDeleteLesson(lesson.lesson_id)} 
+                    <button
+                      onClick={() => handleDeleteLesson(lesson.lesson_id)}
                       className="text-red-500 hover:text-red-700 bg-red-50 p-2 rounded-full"
                     >
                       <Trash2 size={20} />
@@ -69,12 +108,26 @@ export default function ViewLessons() {
 
                   <h3 className="text-xl font-bold text-blue-900 mb-2">{lesson.lesson_name}</h3>
                   <div className="space-y-1 text-gray-600">
-                    <p><strong>Instructor:</strong> {lesson.instructors?.users?.first_name || 'N/A'} {lesson.instructors?.users?.last_name || ''}</p>
-                    <p><strong>Level:</strong> {lesson.lesson_levels.level_name}</p>
-                    <p><strong>Status:</strong> {lesson.status}</p>
-                    <p><strong>Cost:</strong> ${lesson.cost}</p>
-                    <p><strong>Start Date:</strong> {new Date(lesson.start_date).toLocaleDateString()}</p>
-                    <p><strong>Capacity:</strong> {lesson.capacity}</p>
+                    <p>
+                      <strong>Instructor:</strong> {lesson.instructors.users.first_name}{' '}
+                      {lesson.instructors.users.last_name}
+                    </p>
+                    <p>
+                      <strong>Level:</strong> {lesson.lesson_levels.level_name}
+                    </p>
+                    <p>
+                      <strong>Status:</strong> {lesson.status}
+                    </p>
+                    <p>
+                      <strong>Cost:</strong> ${lesson.cost}
+                    </p>
+                    <p>
+                      <strong>Start Date:</strong>{' '}
+                      {new Date(lesson.start_date).toLocaleDateString()}
+                    </p>
+                    <p>
+                      <strong>Capacity:</strong> {lesson.capacity}
+                    </p>
                   </div>
                 </div>
               ))}

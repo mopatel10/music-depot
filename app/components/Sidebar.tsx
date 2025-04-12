@@ -13,10 +13,10 @@ import {
 } from "react-icons/fa";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useAuth } from '../context/AuthContext';
 
 const Sidebar: React.FC<{ onToggle?: (collapsed: boolean) => void }> = ({ onToggle }) => {
-  const { isLoggedIn, setIsLoggedIn, userRole } = useAuth();
+  const [isLoggedIn, setIsLoggedIn] = useState(true); // Hardcoded as logged in
+  const [userRole, setUserRole] = useState('admin'); // Hardcoded as 'admin' or change as needed
   const [scheduleOpen, setScheduleOpen] = useState<boolean>(false);
   const [clientInstructorOpen, setClientInstructorOpen] = useState<boolean>(false);
   const [sessionOpen, setSessionOpen] = useState<boolean>(false);
@@ -26,7 +26,7 @@ const Sidebar: React.FC<{ onToggle?: (collapsed: boolean) => void }> = ({ onTogg
 
   const handleLogout = () => {
     setIsLoggedIn(false);
-    router.push("/");
+    router.push("/"); // Redirect to homepage after logout
   };
 
   const toggleSidebar = () => {
@@ -38,7 +38,7 @@ const Sidebar: React.FC<{ onToggle?: (collapsed: boolean) => void }> = ({ onTogg
   };
 
   if (!isLoggedIn) {
-    return null;
+    return null; // Do not render if the user is logged out
   }
 
   // Updated render condition functions for different roles
@@ -46,7 +46,7 @@ const Sidebar: React.FC<{ onToggle?: (collapsed: boolean) => void }> = ({ onTogg
   const canManageLessons = () => ['admin'].includes(userRole);
   const canViewSessions = () => ['admin', 'instructor', 'client'].includes(userRole);
   const canManageSessions = () => ['admin'].includes(userRole);
-  const canViewClientSchedule = () => ['admin','client'].includes(userRole);
+  const canViewClientSchedule = () => ['admin', 'client'].includes(userRole);
   const canViewInstructorSchedule = () => ['instructor', 'admin'].includes(userRole);
   const canManageUsers = () => ['admin'].includes(userRole);
   const canViewFinancials = () => ['admin'].includes(userRole);
@@ -67,10 +67,10 @@ const Sidebar: React.FC<{ onToggle?: (collapsed: boolean) => void }> = ({ onTogg
       <div className="p-2">
         {/* Title */}
         {!isCollapsed && (
-        <h2 className="text-xl font-bold mb-6 pl-3 text-gray-700 dark:text-gray-200">
-          Your Music Depot
-        </h2>
-      )}
+          <h2 className="text-xl font-bold mb-6 pl-3 text-gray-700 dark:text-gray-200">
+            Your Music Depot
+          </h2>
+        )}
         <ul className="space-y-2">
           {/* Lessons */}
           {canViewLessons() && (
@@ -103,7 +103,6 @@ const Sidebar: React.FC<{ onToggle?: (collapsed: boolean) => void }> = ({ onTogg
                       </Link>
                     </li>
                   )}
-
                 </ul>
               )}
             </li>
@@ -191,10 +190,10 @@ const Sidebar: React.FC<{ onToggle?: (collapsed: boolean) => void }> = ({ onTogg
                         </Link>
                       </li>
                       <li>
-                      <Link href="/add-instructor-availabilty" className="block p-2 rounded-lg hover:bg-purple-600 hover:bg-opacity-20">
-                       Add Instructor Availabilty
-                      </Link>
-                    </li>
+                        <Link href="/add-instructor-availabilty" className="block p-2 rounded-lg hover:bg-purple-600 hover:bg-opacity-20">
+                          Add Instructor Availabilty
+                        </Link>
+                      </li>
                     </>
                   )}
                 </ul>

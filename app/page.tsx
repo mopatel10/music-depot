@@ -2,47 +2,23 @@
 
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
-import { useAuth } from "./context/AuthContext"; 
 import "../public/styles/globals.css";
-import axios from "axios";
 
 const LoginPage: React.FC = () => {
-  const { setIsLoggedIn, setUserRole, setUserId } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const router = useRouter();
-  
 
-  const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
+  const handleLogin = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setLoading(true);
-    setError("");
-  
-    try {
-      const res = await axios.post("/api/authUser", { email, password });
-  
-      if (res.status !== 200) throw new Error(res.data.error || "Login failed");
-  
-      // Store token and update login state
-      localStorage.setItem("token", res.data.token);
-      setIsLoggedIn(true);
-      
-      // Set the user role and user ID
-      setUserRole(res.data.role);
-      setUserId(res.data.userId); 
-      
+
+    // Simulate loading delay before redirecting
+    setTimeout(() => {
       router.push("/ViewLessons");
-  
-    } catch (error: any) {
-      console.error("Login Error:", error);
-      setError(error.response?.data?.error || "Login failed");
-    } finally {
-      setLoading(false);
-    }
+    }, 1000);
   };
-  
 
   return (
     <div className="flex justify-center items-center h-screen bg-gray-100 relative overflow-hidden">
@@ -53,7 +29,6 @@ const LoginPage: React.FC = () => {
       <div className="absolute text-blue-500 opacity-10 text-[250px] top-[70%] left-[60%] animate-float2">
         ♪ ♫ ♬ ♭ ♮ ♯ ♪
       </div>
-      
 
       <div className="bg-gradient-to-b from-blue-300 to-pink-500 p-8 rounded-xl shadow-lg text-center w-96 relative z-10">
         <div className="text-3xl font-bold text-blue-500 flex justify-center items-center mb-4">
@@ -64,20 +39,17 @@ const LoginPage: React.FC = () => {
           Manage your lessons and schedules effortlessly
         </p>
 
-        {/* Display error message if present */}
-        {error && <p className="text-red-500 text-sm mb-4">{error}</p>}
-
         <form onSubmit={handleLogin}>
           <div className="mb-4 text-left">
             <label htmlFor="email" className="block text-sm font-bold text-gray-700 mb-1">
-              Email
+              Username
             </label>
             <input
-              type="email"
+              type="text"
               id="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              placeholder="Enter your email"
+              placeholder="Enter any username"
               required
               className="w-full p-3 border-2 border-gray-300 rounded-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-300"
             />
@@ -91,7 +63,7 @@ const LoginPage: React.FC = () => {
               id="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              placeholder="Enter your password"
+              placeholder="Enter any password"
               required
               className="w-full p-3 border-2 border-gray-300 rounded-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-300"
             />

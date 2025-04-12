@@ -37,44 +37,20 @@ const AddFinancial: React.FC = () => {
   const [paymentMethod, setPaymentMethod] = useState<string>('');
   const [isPaid, setIsPaid] = useState<boolean>(false);
 
-  // State for dynamic dropdowns
-  const [clients, setClients] = useState<Client[]>([]);
-  const [lessons, setLessons] = useState<Lesson[]>([]);
+  // Hardcoded data for clients and lessons
+  const clients: Client[] = [
+    { client_id: '1', first_name: 'John', last_name: 'Doe' },
+    { client_id: '2', first_name: 'Jane', last_name: 'Smith' },
+  ];
+
+  const lessons: Lesson[] = [
+    { lesson_id: '1', lesson_name: 'Math 101', instructor_name: 'Dr. James' },
+    { lesson_id: '2', lesson_name: 'Science 101', instructor_name: 'Prof. Sarah' },
+  ];
 
   // Error and success state
   const [error, setError] = useState<string>('');
   const [success, setSuccess] = useState<string>('');
-  const [isLoading, setIsLoading] = useState<boolean>(true);
-
-  // Fetch clients and lessons on component mount
-  useEffect(() => {
-    const fetchClientsAndLessons = async () => {
-      try {
-        // Fetch clients
-        const clientResponse = await fetch('/api/getClients');
-        if (!clientResponse.ok) {
-          throw new Error('Failed to fetch clients');
-        }
-        const clientData = await clientResponse.json();
-        setClients(clientData);
-
-        // Fetch lessons
-        const lessonResponse = await fetch('/api/getLessons');
-        if (!lessonResponse.ok) {
-          throw new Error('Failed to fetch lessons');
-        }
-        const lessonData = await lessonResponse.json();
-        setLessons(lessonData);
-
-        setIsLoading(false);
-      } catch (err) {
-        setError(err instanceof Error ? err.message : 'An unexpected error occurred');
-        setIsLoading(false);
-      }
-    };
-
-    fetchClientsAndLessons();
-  }, []);
 
   // Validate form before submission
   const validateForm = (): boolean => {
@@ -118,44 +94,19 @@ const AddFinancial: React.FC = () => {
       paid: isPaid
     };
 
-    try {
-      // API call to add financial record
-      const response = await fetch('/api/addFinancial', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(financialEntry),
-      });
-      router.push('/ViewFinancials');
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || 'Failed to add financial record');
-      }
+    // Success handling
+    setSuccess('Financial record added successfully');
 
-      // Success handling
-      setSuccess('Financial record added successfully');
-      
-      // Reset form
-      setClientId('');
-      setLessonId('');
-      setAmountPaid('');
-      setPaymentMethod('');
-      setIsPaid(false);
+    // Reset form
+    setClientId('');
+    setLessonId('');
+    setAmountPaid('');
+    setPaymentMethod('');
+    setIsPaid(false);
 
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'An unexpected error occurred');
-    }
+    // Redirect
+    router.push('/ViewFinancials');
   };
-
-  // Loading state
-  if (isLoading) {
-    return (
-      <div className="min-h-screen bg-gray-100 flex items-center justify-center px-4 py-8">
-        <div className="animate-spin rounded-full h-32 w-32 border-t-2 border-b-2 border-blue-500"></div>
-      </div>
-    );
-  }
 
   return (
     <div className="min-h-screen bg-gray-100 flex items-center justify-center px-4 py-8">
@@ -173,7 +124,7 @@ const AddFinancial: React.FC = () => {
               {error}
             </div>
           )}
-          
+
           {success && (
             <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative" role="alert">
               {success}

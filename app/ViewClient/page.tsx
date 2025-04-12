@@ -3,13 +3,12 @@ import React, { useEffect, useState } from "react";
 import { Calendar, dateFnsLocalizer, Event } from "react-big-calendar";
 import { format, parse, startOfWeek, getDay } from "date-fns";
 import "react-big-calendar/lib/css/react-big-calendar.css";
-import { useAuth } from "../context/AuthContext"; 
 
 // Configure date-fns localizer
 const locales = {
   "en-US": require("date-fns/locale/en-US"),
 };
-export const localizer = dateFnsLocalizer({
+const localizer = dateFnsLocalizer({
   format,
   parse,
   startOfWeek: () => startOfWeek(new Date(), { weekStartsOn: 1 }),
@@ -17,7 +16,7 @@ export const localizer = dateFnsLocalizer({
   locales,
 });
 
-interface ClientSchedule {
+interface InstructorSchedule {
   date: string;
   start: string;
   end: string;
@@ -29,59 +28,57 @@ interface ClientSchedule {
 
 const CalendarPage: React.FC = () => {
   const [events, setEvents] = useState<Event[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const { userId, userRole } = useAuth(); // Get userId and userRole from AuthContext
+  const [isLoading, setIsLoading] = useState(false);
+
+  // Hardcoded schedule data
+  const instructorSchedules: InstructorSchedule[] = [
+    {
+      date: "2025-04-12",
+      start: "09:00",
+      end: "10:00",
+      title: "John Doe",
+      client_first_name: "Alice",
+      client_last_name: "Smith",
+      lesson_name: "Math",
+    },
+    {
+      date: "2025-04-12",
+      start: "10:30",
+      end: "11:30",
+      title: "Jane Doe",
+      client_first_name: "Bob",
+      client_last_name: "Johnson",
+      lesson_name: "Science",
+    },
+    // Add more hardcoded events as needed
+  ];
 
   // Function to convert 'HH:mm' to a Date object
   const convertToDate = (dateString: string, timeString: string): Date => {
     const [hours, minutes] = timeString.split(":").map(Number);
-    const date = new Date(`${dateString}T00:00:00Z`); 
-    date.setHours(hours, minutes);
+    const date = new Date(`${dateString}T00:00:00Z`); // Ensure the date is in UTC
+    date.setHours(hours, minutes); // Set the correct hours and minutes
     return date;
   };
 
-  // Fetch the data from API
+  // Map the hardcoded data to Big Calendar events
   useEffect(() => {
-    const fetchSchedule = async () => {
-      try {
-        setIsLoading(true);
-        
-        const isAdmin = userRole === 'admin';
-        const url = isAdmin 
-          ? '/api/getClientSchedules' // Admin sees all schedules
-          : `/api/getClientSchedules${userId ? `?clientId=${userId}` : ''}`;
-        
-        const response = await fetch(url);
-        
-        if (!response.ok) {
-          throw new Error("Failed to fetch schedules");
-        }
-        const data: ClientSchedule[] = await response.json();
+    const mappedEvents = instructorSchedules.map((schedule) => {
+      const { date, start, end, title } = schedule;
 
-        // Map API response to Calendar events
-        const mappedEvents = data.map((schedule) => {
-          const { date, start, end, client_first_name, client_last_name, lesson_name } = schedule;
+      const startDate = convertToDate(date, start);
+      const endDate = convertToDate(date, end);
 
-          const startDate = convertToDate(date, start);
-          const endDate = convertToDate(date, end);
+      return {
+        title: `${title}`,
+        start: startDate,
+        end: endDate,
+      };
+    });
 
-          return {
-            title: `${client_first_name} ${client_last_name} - ${lesson_name}`,
-            start: startDate,
-            end: endDate,
-          };
-        });
-
-        setEvents(mappedEvents);
-        setIsLoading(false);
-      } catch (error) {
-        console.error("Error fetching schedules:", error);
-        setIsLoading(false);
-      }
-    };
-
-    fetchSchedule();
-  }, [userId, userRole]); 
+    setEvents(mappedEvents);
+    setIsLoading(false);
+  }, []);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-indigo-50 to-blue-100 py-10 px-4 sm:px-6 lg:px-8">
@@ -153,20 +150,20 @@ const CustomToolbar = (toolbar: any) => {
   return (
     <div className="rbc-toolbar flex justify-between items-center p-4 bg-gray-100">
       <div className="flex items-center space-x-2">
-        <button 
-          onClick={() => toolbar.onNavigate('PREV')} 
+        <button
+          onClick={() => toolbar.onNavigate('PREV')}
           className="px-3 py-1 bg-indigo-500 text-white rounded-md hover:bg-indigo-600 transition-colors"
         >
           Prev
         </button>
-        <button 
-          onClick={() => toolbar.onNavigate('TODAY')} 
+        <button
+          onClick={() => toolbar.onNavigate('TODAY')}
           className="px-3 py-1 bg-indigo-500 text-white rounded-md hover:bg-indigo-600 transition-colors"
         >
           Today
         </button>
-        <button 
-          onClick={() => toolbar.onNavigate('NEXT')} 
+        <button
+          onClick={() => toolbar.onNavigate('NEXT')}
           className="px-3 py-1 bg-indigo-500 text-white rounded-md hover:bg-indigo-600 transition-colors"
         >
           Next
@@ -182,8 +179,8 @@ const CustomToolbar = (toolbar: any) => {
             onClick={() => toolbar.onView(view)}
             className={`
               px-3 py-1 rounded-md transition-colors
-              ${toolbar.view === view 
-                ? 'bg-indigo-600 text-white' 
+              ${toolbar.view === view
+                ? 'bg-indigo-600 text-white'
                 : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
               }
             `}

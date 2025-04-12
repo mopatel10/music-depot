@@ -16,11 +16,30 @@ interface User {
 }
 
 const UpdateUser = () => {
+  // Hardcoded user data
+  const hardcodedUsers: User[] = [
+    {
+      user_id: "1",
+      first_name: "John",
+      last_name: "Doe",
+      email: "john.doe@example.com",
+      phone_number: "123-456-7890",
+      role: "Instructor",
+      employment_type: "Full-Time",
+    },
+    {
+      user_id: "2",
+      first_name: "Jane",
+      last_name: "Smith",
+      email: "jane.smith@example.com",
+      phone_number: "987-654-3210",
+      role: "Student",
+    },
+  ];
+
   // State for users list and selected user
-  const [users, setUsers] = useState<User[]>([]);
+  const [users, setUsers] = useState<User[]>(hardcodedUsers);
   const [selectedUserId, setSelectedUserId] = useState<string>("");
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
   const [isEditing, setIsEditing] = useState(false);
 
   // Form state with default empty string values
@@ -47,125 +66,45 @@ const UpdateUser = () => {
     }
   }, [selectedUserId]);
 
-  // Fetch users list on component mount
-  useEffect(() => {
-    const fetchUsersList = async () => {
-      try {
-        const response = await fetch('/api/getUsers');
-        if (!response.ok) {
-          throw new Error('Failed to fetch users list');
-        }
-        const data = await response.json();
-        setUsers(data.users);
-        setIsLoading(false);
-      } catch (err) {
-        setError(err instanceof Error ? err.message : 'An unknown error occurred');
-        setIsLoading(false);
-      }
-    };
-
-    fetchUsersList();
-  }, []);
-
   // Fetch selected user's details when a user is selected
   useEffect(() => {
-    const fetchSelectedUserData = async () => {
-      if (!selectedUserId) return;
-
-      try {
-        const response = await fetch(`/api/getUsers?id=${selectedUserId}`);
-        if (!response.ok) {
-          throw new Error('Failed to fetch user data');
-        }
-        const data = await response.json();
-        
-        // Populate form fields with default empty string fallback
-        setFirstName(data.first_name || "");
-        setLastName(data.last_name || "");
-        setEmail(data.email || "");
-        setPhoneNumber(data.phone_number || "");
-        setUserRole(data.role || "");
-        setEmploymentType(data.employment_type || "");
-        
-        // Reset editing state
-        setIsEditing(false);
-      } catch (err) {
-        setError(err instanceof Error ? err.message : 'An unknown error occurred');
-      }
-    };
-
-    fetchSelectedUserData();
-  }, [selectedUserId]);
+    const selectedUser = users.find((user) => user.user_id === selectedUserId);
+    if (selectedUser) {
+      setFirstName(selectedUser.first_name || "");
+      setLastName(selectedUser.last_name || "");
+      setEmail(selectedUser.email || "");
+      setPhoneNumber(selectedUser.phone_number || "");
+      setUserRole(selectedUser.role || "");
+      setEmploymentType(selectedUser.employment_type || "");
+      setIsEditing(false);
+    }
+  }, [selectedUserId, users]);
 
   // Handle form submission
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
-    try {
-      const response = await fetch('/api/updateUsers', {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          user_id: selectedUserId,
-          first_name: firstName,
-          last_name: lastName,
-          email,
-          phone_number: phoneNumber,
-          ...(userRole === 'Instructor' && { employment_type: employmentType })
-        })
-      });
 
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || 'Failed to update profile');
-      }
+    // Simulate an update without an API call
+    const updatedUser = {
+      user_id: selectedUserId,
+      first_name: firstName,
+      last_name: lastName,
+      email,
+      phone_number: phoneNumber,
+      ...(userRole === "Instructor" && { employment_type: employmentType }),
+    };
 
-      // Show success message and disable editing
-      alert('Profile updated successfully!');
-      setIsEditing(false);
-    } catch (err) {
-      alert(err instanceof Error ? err.message : 'An error occurred');
-    }
+    console.log("Updated User:", updatedUser);
+    alert("Profile updated successfully!");
+    setIsEditing(false);
   };
-
-  // Render loading state
-  if (isLoading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-100">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-blue-500 mx-auto mb-4"></div>
-          <p className="text-gray-600">Loading users...</p>
-        </div>
-      </div>
-    );
-  }
-
-  // Render error state
-  if (error) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-red-50">
-        <div className="bg-white p-8 rounded-xl shadow-lg text-center">
-          <h2 className="text-2xl font-bold text-red-600 mb-4">Error</h2>
-          <p className="text-gray-700">{error}</p>
-          <button 
-            onClick={() => router.push('/')}
-            className="mt-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
-          >
-            Return to Home
-          </button>
-        </div>
-      </div>
-    );
-  }
 
   return (
     <div className="min-h-screen bg-gray-100 flex items-center justify-center px-4 py-8">
       <div className="w-full max-w-md bg-white shadow-2xl rounded-2xl overflow-hidden">
         <div className="bg-gradient-to-r from-blue-500 to-purple-600 p-6 text-white">
           <h1 className="text-3xl font-bold mb-4">Update User Profile</h1>
-          
+
           {/* User Selection Dropdown */}
           <div className="mb-4">
             <label className="block text-sm font-medium text-white mb-1">
@@ -198,11 +137,10 @@ const UpdateUser = () => {
                   value={firstName}
                   onChange={(e) => setFirstName(e.target.value)}
                   disabled={!isEditing}
-                  className={`w-full px-4 py-2 border border-gray-300 rounded-lg ${
-                    isEditing 
-                      ? 'focus:ring-2 focus:ring-blue-500/50 focus:outline-none' 
+                  className={`w-full px-4 py-2 border border-gray-300 rounded-lg ${isEditing
+                      ? 'focus:ring-2 focus:ring-blue-500/50 focus:outline-none'
                       : 'bg-gray-100 cursor-not-allowed'
-                  }`}
+                    }`}
                 />
               </div>
               <div>
@@ -214,11 +152,10 @@ const UpdateUser = () => {
                   value={lastName}
                   onChange={(e) => setLastName(e.target.value)}
                   disabled={!isEditing}
-                  className={`w-full px-4 py-2 border border-gray-300 rounded-lg ${
-                    isEditing 
-                      ? 'focus:ring-2 focus:ring-blue-500/50 focus:outline-none' 
+                  className={`w-full px-4 py-2 border border-gray-300 rounded-lg ${isEditing
+                      ? 'focus:ring-2 focus:ring-blue-500/50 focus:outline-none'
                       : 'bg-gray-100 cursor-not-allowed'
-                  }`}
+                    }`}
                 />
               </div>
             </div>
@@ -232,11 +169,10 @@ const UpdateUser = () => {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 disabled={!isEditing}
-                className={`w-full px-4 py-2 border border-gray-300 rounded-lg ${
-                  isEditing 
-                    ? 'focus:ring-2 focus:ring-blue-500/50 focus:outline-none' 
+                className={`w-full px-4 py-2 border border-gray-300 rounded-lg ${isEditing
+                    ? 'focus:ring-2 focus:ring-blue-500/50 focus:outline-none'
                     : 'bg-gray-100 cursor-not-allowed'
-                }`}
+                  }`}
               />
             </div>
 
@@ -249,15 +185,14 @@ const UpdateUser = () => {
                 value={phoneNumber}
                 onChange={(e) => setPhoneNumber(e.target.value)}
                 disabled={!isEditing}
-                className={`w-full px-4 py-2 border border-gray-300 rounded-lg ${
-                  isEditing 
-                    ? 'focus:ring-2 focus:ring-blue-500/50 focus:outline-none' 
+                className={`w-full px-4 py-2 border border-gray-300 rounded-lg ${isEditing
+                    ? 'focus:ring-2 focus:ring-blue-500/50 focus:outline-none'
                     : 'bg-gray-100 cursor-not-allowed'
-                }`}
+                  }`}
               />
             </div>
 
-            {userRole === 'Instructor' && (
+            {userRole === "Instructor" && (
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
                   Employment Type
@@ -266,11 +201,10 @@ const UpdateUser = () => {
                   value={employmentType}
                   onChange={(e) => setEmploymentType(e.target.value)}
                   disabled={!isEditing}
-                  className={`w-full px-4 py-2 border border-gray-300 rounded-lg ${
-                    isEditing 
-                      ? 'focus:ring-2 focus:ring-blue-500/50 focus:outline-none' 
+                  className={`w-full px-4 py-2 border border-gray-300 rounded-lg ${isEditing
+                      ? 'focus:ring-2 focus:ring-blue-500/50 focus:outline-none'
                       : 'bg-gray-100 cursor-not-allowed'
-                  }`}
+                    }`}
                 >
                   <option value="">Select Employment Type</option>
                   <option value="Full-Time">Full-Time</option>
@@ -289,7 +223,7 @@ const UpdateUser = () => {
                   Edit Profile
                 </button>
               )}
-              
+
               {isEditing && (
                 <>
                   <button

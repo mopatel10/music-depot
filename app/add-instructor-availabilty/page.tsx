@@ -1,6 +1,6 @@
 "use client";
 import { useRouter } from "next/navigation";
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { PlusCircle } from "lucide-react";
 
 function AddSessions() {
@@ -11,74 +11,25 @@ function AddSessions() {
     date: "",
   });
 
-  const [instructors, setInstructors] = useState([]);
-
-  const [lessonInstructorMap, setLessonInstructorMap] = useState({});
   const router = useRouter();
 
-  useEffect(() => {
-    async function fetchData() {
-      try {
-        const [instructorsRes] = await Promise.all([
-          fetch("/api/getInstructors"),
-        ]);
+  const hardcodedInstructors = [
+    { instructor_id: "1", first_name: "Alice", last_name: "Smith" },
+    { instructor_id: "2", first_name: "Bob", last_name: "Johnson" },
+  ];
 
-        let instructorMap = {};
-
-        if (instructorsRes.ok) setInstructors(await instructorsRes.json());
-      } catch (error) {
-        console.error("Error fetching data:", error);
-      }
-    }
-    fetchData();
-  }, []);
-
-  const handleInputChange = (e) => {
-    const { name, value, type, checked } = e.target;
-
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+    const { name, value } = e.target;
     setFormData((prev) => ({
       ...prev,
-      [name]: type === "checkbox" ? checked : value,
+      [name]: value,
     }));
   };
 
-  const handleFormSubmit = async (e) => {
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-
-    if (!formData.instructor_id || !formData.start_time || !formData.end_time) {
-      return alert("Please fill all required fields.");
-    }
-
-    const startTime = new Date(formData.start_time).toISOString();
-    const endTime = new Date(formData.end_time).toISOString();
-    const date = formData.date
-      ? new Date(formData.date).toISOString().split("T")[0]
-      : null;
-
-    try {
-      const response = await fetch("/api/add-instructor-availability", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          ...formData,
-          start_time: startTime,
-          end_time: endTime,
-          date,
-        }),
-      });
-      if (!response.ok) throw new Error("Failed to add lesson schedule");
-      alert("Lesson schedule added successfully!");
-      setFormData({
-        instructor_id: "",
-        start_time: "",
-        end_time: "",
-        date: "",
-      });
-      router.push("/ViewSessions");
-    } catch (error) {
-      console.error("Error adding lesson schedule:", error);
-      alert("Failed to add lesson schedule");
-    }
+    console.log("Submitted Data:", formData);
+    // For public demo, we won't route or post this anywhere
   };
 
   return (
@@ -93,7 +44,7 @@ function AddSessions() {
 
         {/* Form Container */}
         <div className="p-8">
-          <form onSubmit={handleFormSubmit} className="space-y-6">
+          <form className="space-y-6" onSubmit={handleSubmit}>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {/* Instructor Dropdown */}
               <div className="space-y-2">
@@ -106,21 +57,13 @@ function AddSessions() {
                   onChange={handleInputChange}
                   className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-300"
                   required
-                  
                 >
                   <option value="">Select Instructor</option>
-                  {instructors.length > 0 ? (
-                    instructors.map((inst) => (
-                      <option
-                        key={inst.instructor_id}
-                        value={inst.instructor_id}
-                      >
-                        {inst.first_name} {inst.last_name}
-                      </option>
-                    ))
-                  ) : (
-                    <option value="">No instructors available</option>
-                  )}
+                  {hardcodedInstructors.map((inst) => (
+                    <option key={inst.instructor_id} value={inst.instructor_id}>
+                      {inst.first_name} {inst.last_name}
+                    </option>
+                  ))}
                 </select>
               </div>
               {/* Date */}
