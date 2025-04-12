@@ -3,14 +3,12 @@
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import "../public/styles/globals.css";
-// Make sure this path is correct - adjust if needed
-import DemoModePopup from "./components/pop-up";
 
 const LoginPage: React.FC = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
-  const [showPopup, setShowPopup] = useState(true); // Explicitly control popup visibility
+  const [showPopup, setShowPopup] = useState(true); // Start with popup visible
   const router = useRouter();
 
   const handleLogin = (e: React.FormEvent<HTMLFormElement>) => {
@@ -22,9 +20,11 @@ const LoginPage: React.FC = () => {
       router.push("/ViewLessons");
     }, 1000);
   };
+
   const closePopup = () => {
     setShowPopup(false);
   };
+
   return (
     <div className="flex justify-center items-center h-screen bg-gray-100 relative overflow-hidden">
       {/* Floating Symbols */}
@@ -35,10 +35,10 @@ const LoginPage: React.FC = () => {
         ♪ ♫ ♬ ♭ ♮ ♯ ♪
       </div>
 
-      {/* Popup explicitly controlled */}
+      {/* Enhanced Popup */}
       {showPopup && (
-        <div className="fixed inset-0 flex items-center justify-center z-[9999] bg-white bg-opacity-75">
-          <div className="bg-white rounded-xl shadow-xl max-w-md w-full mx-4 overflow-hidden">
+        <div className="fixed inset-0 flex items-center justify-center z-[9999] bg-gray-800 bg-opacity-80">
+          <div className="bg-white rounded-xl shadow-xl max-w-lg w-full mx-4 overflow-hidden">
             <div className="bg-gradient-to-r from-blue-500 to-pink-500 p-4">
               <div className="flex items-center">
                 <div className="bg-white rounded-full p-2 mr-3">
@@ -69,6 +69,46 @@ const LoginPage: React.FC = () => {
                   <span className="text-gray-600">The real application helps music instructors manage lesson scheduling and finances</span>
                 </li>
               </ul>
+
+              <div className="mt-5 mb-5 border-t border-gray-200 pt-4">
+                <h5 className="text-md font-semibold text-gray-800 mb-2">Technology Stack</h5>
+                <div className="flex flex-wrap gap-2 mb-3">
+                  <span className="px-2 py-1 bg-blue-100 text-blue-700 rounded-md text-xs font-medium">Next.js 14</span>
+                  <span className="px-2 py-1 bg-green-100 text-green-700 rounded-md text-xs font-medium">Prisma ORM</span>
+                  <span className="px-2 py-1 bg-purple-100 text-purple-700 rounded-md text-xs font-medium">TypeScript</span>
+                  <span className="px-2 py-1 bg-yellow-100 text-yellow-700 rounded-md text-xs font-medium">PostgreSQL</span>
+                  <span className="px-2 py-1 bg-red-100 text-red-700 rounded-md text-xs font-medium">PgAdmin 4</span>
+                  <span className="px-2 py-1 bg-indigo-100 text-indigo-700 rounded-md text-xs font-medium">NextAuth.js</span>
+                  <span className="px-2 py-1 bg-pink-100 text-pink-700 rounded-md text-xs font-medium">Tailwind CSS</span>
+                  <span className="px-2 py-1 bg-gray-100 text-gray-700 rounded-md text-xs font-medium">React Query</span>
+                </div>
+              </div>
+
+              <div className="mb-5 border-t border-gray-200 pt-4">
+                <h5 className="text-md font-semibold text-gray-800 mb-2">Development Team</h5>
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="flex items-center">
+                    <div className="w-6 h-6 bg-blue-500 rounded-full flex items-center justify-center text-white text-xs mr-2">JD</div>
+                    <span className="text-sm text-gray-700">Mohammed Patel - Lead Developer</span>
+                  </div>
+                  <div className="flex items-center">
+                    <div className="w-6 h-6 bg-green-500 rounded-full flex items-center justify-center text-white text-xs mr-2">SL</div>
+                    <span className="text-sm text-gray-700">Inguer Lara - Backend</span>
+                  </div>
+                  <div className="flex items-center">
+                    <div className="w-6 h-6 bg-purple-500 rounded-full flex items-center justify-center text-white text-xs mr-2">MT</div>
+                    <span className="text-sm text-gray-700">Malsini Masachchige - Frontend</span>
+                  </div>
+                  <div className="flex items-center">
+                    <div className="w-6 h-6 bg-pink-500 rounded-full flex items-center justify-center text-white text-xs mr-2">AJ</div>
+                    <span className="text-sm text-gray-700">Fathima Bukhari - UI/UX</span>
+                  </div>
+                  <div className="flex items-center">
+                    <div className="w-6 h-6 bg-yellow-500 rounded-full flex items-center justify-center text-white text-xs mr-2">RK</div>
+                    <span className="text-sm text-gray-700">Calvin Chitnaraine - QA Specialist</span>
+                  </div>
+                </div>
+              </div>
 
               <p className="text-gray-600 mb-5 text-sm italic">
                 This demo showcases the interface that solved scheduling and financial tracking problems for a small music business.
