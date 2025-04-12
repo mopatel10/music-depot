@@ -88,23 +88,23 @@ const LoginPage: React.FC = () => {
                 <h5 className="text-md font-semibold text-gray-800 mb-2">Development Team</h5>
                 <div className="grid grid-cols-2 gap-3">
                   <div className="flex items-center">
-                    <div className="w-6 h-6 bg-blue-500 rounded-full flex items-center justify-center text-white text-xs mr-2">JD</div>
+                    <div className="w-6 h-6 bg-blue-500 rounded-full flex items-center justify-center text-white text-xs mr-2">MP</div>
                     <span className="text-sm text-gray-700">Mohammed Patel - Lead Developer</span>
                   </div>
                   <div className="flex items-center">
-                    <div className="w-6 h-6 bg-green-500 rounded-full flex items-center justify-center text-white text-xs mr-2">SL</div>
+                    <div className="w-6 h-6 bg-green-500 rounded-full flex items-center justify-center text-white text-xs mr-2">IL</div>
                     <span className="text-sm text-gray-700">Inguer Lara - Backend</span>
                   </div>
                   <div className="flex items-center">
-                    <div className="w-6 h-6 bg-purple-500 rounded-full flex items-center justify-center text-white text-xs mr-2">MT</div>
+                    <div className="w-6 h-6 bg-purple-500 rounded-full flex items-center justify-center text-white text-xs mr-2">MM</div>
                     <span className="text-sm text-gray-700">Malsini Masachchige - Frontend</span>
                   </div>
                   <div className="flex items-center">
-                    <div className="w-6 h-6 bg-pink-500 rounded-full flex items-center justify-center text-white text-xs mr-2">AJ</div>
+                    <div className="w-6 h-6 bg-pink-500 rounded-full flex items-center justify-center text-white text-xs mr-2">FB</div>
                     <span className="text-sm text-gray-700">Fathima Bukhari - UI/UX</span>
                   </div>
                   <div className="flex items-center">
-                    <div className="w-6 h-6 bg-yellow-500 rounded-full flex items-center justify-center text-white text-xs mr-2">RK</div>
+                    <div className="w-6 h-6 bg-yellow-500 rounded-full flex items-center justify-center text-white text-xs mr-2">CC</div>
                     <span className="text-sm text-gray-700">Calvin Chitnaraine - QA Specialist</span>
                   </div>
                 </div>
